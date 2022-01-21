@@ -113,11 +113,11 @@ These are recorded in the Trello Board above, however reiterated here for conven
 
 ### Testing
 
-Validator Testing
+#### Validator Testing
 
-User Experience Testing
+#### User Experience Testing
 
-Manual Testing
+#### Manual Testing
 
 ## Deployment
 
@@ -129,7 +129,7 @@ With the help of this [tutorial](https://dev.to/yuribenjamin/how-to-deploy-react
 5. Select the "Save" button.
 6. The website will be deployed automatically and a link to the live website will be displayed.
 
-The live page is available [here](https://andodaryl.github.io/EtchPad/).
+The live page is available [here](https://andodaryl.github.io/personal-library/).
 
 ## Forking Github Repos
 
