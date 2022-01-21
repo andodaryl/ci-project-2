@@ -36,51 +36,42 @@ Product use-case outlined in terms of user needs.
 
 Managed using Prince2 methodology via this [Trello Board](https://trello.com/b/O4Q5J5Zy/personal-library).
 
-## Development Log
+## Design
 
-These are recorded in the Trello Board above, however reiterated here for convenience.
-
-### Features
-
-#### Implemented
-
-#### Backlog
-
-### Bugs
-
-#### Fixed
-
-#### Backlog
-
-### Design
-Wireframes
+### Wireframes
 
 [Figma](https://www.figma.com/) was chosen for the wireframing environment as it offers powerful features for free.  
+
 The [Bootsrap 5 UI Kit](https://www.figma.com/community/file/979333438575836958) by ThemeSelection was used to create the wireframes within Figma.
+
 Screenshots for desktop/large tablet wireframes available ~[here](#)~.  
 Screenshots for mobile/small tablet wireframes available ~[here](#)~.
 
-Device Dimensions
+### Device Dimensions
 
-* [The Bootstrap 5 Framework](https://getbootstrap.com/docs/5.0/layout/containers/) uses predetermined device dimensions:
-  * Extra small <576px
-  * Small ≥576px
-  * Medium ≥768px
-  * Large ≥992px
-  * X-Large ≥1200px
-  * XX-Large ≥1400px
-* This allows for a responsive and personalised website experience.
+[The Bootstrap 5 Framework](https://getbootstrap.com/docs/5.0/layout/containers/) uses predetermined device dimensions:
+* Extra small <576px
+* Small ≥576px
+* Medium ≥768px
+* Large ≥992px
+* X-Large ≥1200px
+* XX-Large ≥1400px
 
-Color Pallette
-* For simplicity and consistency, three main colours were chosen:
-  * Primary: ...
-  * Secondary: ...
-  * Tertiary: ...
-* [Paletton](https://paletton.com/) creates variations of the main colors for stylistic purposes.
+This allows for a responsive and personalised website experience.
 
-Typography
-* [The Bootstrap 5 Framework](https://getbootstrap.com/docs/5.0/content/reboot/#native-font-stack) uses a predetermined set of native fonts,
-* Allowing for maximum compatibility while maintaining aesthetic coherence:
+### Color Pallette
+
+For simplicity and consistency, three main colours were chosen:
+* Primary: ...
+* Secondary: ...
+* Tertiary: ...
+
+[Paletton](https://paletton.com/) creates variations of the main colors for stylistic purposes.
+
+### Typography
+
+[The Bootstrap 5 Framework](https://getbootstrap.com/docs/5.0/content/reboot/#native-font-stack) uses a predetermined set of native fonts which allows for maximum compatibility while maintaining aesthetic coherence:
+
 ```
 $font-family-sans-serif:
   // Cross-platform generic font family (default user interface font)
@@ -102,8 +93,23 @@ $font-family-sans-serif:
   "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
 ```
 
-Logo
-* ...
+### Logo
+
+## Development Log
+
+These are recorded in the Trello Board above, however reiterated here for convenience.
+
+### Features
+
+#### Implemented
+
+#### Backlog
+
+### Bugs
+
+#### Fixed
+
+#### Backlog
 
 ### Testing
 
