@@ -32,6 +32,16 @@ Initial target market is as follows:
 
 Product use-case outlined in terms of user needs.
 
+As a user of this web application I want to be able to:
+
+1. Navigate and interact with the application easily on various devices for ease of regular use.
+2. Feel that the application is secure to prevent risk of data loss or privacy infringement.
+3. Know the people and story behind the application for extra sense of legitimacy.
+4. Be able to contact the providers of this application for feedback or queries.
+5. Display list of books to keep track of reading list.
+6. See details of books for further information.
+7. Add, edit or delete books for reading list maintenance.
+
 ## Project Management
 
 Managed using Prince2 methodology via this [Trello Board](https://trello.com/b/O4Q5J5Zy/personal-library).
@@ -61,10 +71,10 @@ This allows for a responsive and personalised website experience.
 
 ### Color Pallette
 
-For simplicity and consistency, three main colours were chosen:
-* Primary: ...
-* Secondary: ...
-* Tertiary: ...
+For simplicity and consistency, three main colors were chosen using boostrap default colors:
+* Primary: #212529 >>> 'bootstrap dark'
+* Secondary: #f8f9fa >>> 'boostrap light'
+* Tertiary: #dc3545 >>> 'boostrap danger'
 
 [Paletton](https://paletton.com/) creates variations of the main colors for stylistic purposes.
 
