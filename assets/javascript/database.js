@@ -94,6 +94,17 @@ const databaseAPI = {
     )
     return searchResults
   },
+  saveToBrowser() {
+    if (data.bookListUpdating) return STATUSUPDATING // Exit early if bookList is being updated
+    data.bookListUpdating = true // Activate debouncer
+    window.localStorage.setItem('bookList', JSON.stringify(data.bookList));
+    data.bookListUpdating = false // Deactivate debouncer
+  },
+  loadFromBrowser() {
+    if (data.bookListUpdating) return STATUSUPDATING // Exit early if bookList is being updated
+    const newBookList = JSON.parse(window.localStorage.getItem('user'));
+    updateBookList(newBookList, TYPEBOOKLIST)
+  },
 }
 
 // EXPORT
