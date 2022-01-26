@@ -65,11 +65,32 @@ const databaseAPI = {
   searchList({...searchTermsObject}) {
     const searchTermsArray = Object.entries(searchTermsObject)
     // Filters & refines bookList according to searchTerms
-    const searchResults = searchTermsArray.reduce( searchResults, searchTerm => {
+    const searchResults = searchTermsArray.reduce((previousResults, searchTerm) => {
       const property = searchTerm[0]
       const value = searchTerm[1]
-      return searchResults.filter(book => book[property] == value)
-    }, []
+      switch(property) {
+        case 'title':
+          // Check if searchTerm is in book titles: case insensitive
+          return previousResults.filter(book => {
+            const bookTitle = book[property].toLowerCase()
+            const searchValue = value.toLowerCase()
+            return bookTitle.includes(searchValue)
+          })
+        case 'totalPages':
+        case 'year':
+          // Check if book and search numbers match
+          return previousResults.filter(book => book[property] === parseInt(value))
+        case 'authorList':
+        case 'subjectList':
+          // Check if some author/subjects in book are in searchTerm array: case insensitive
+          return previousResults.filter(book => {
+            const bookPropList = book[property]
+            const searchPropList = value.map(item => item.toLowerCase())
+            return bookPropList.some(item => searchPropList.indexOf(item.toLowerCase()) > -1) 
+          })
+      }
+      return previousResults.filter(book => book[property] == value)
+    }, data.bookList.slice()
     )
     return searchResults
   },
