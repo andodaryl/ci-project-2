@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
+  <!-- header navbar -->
   <header class="sticky-top bg-dark">
     <div class="container-md">
         <nav class="navbar navbar-expand-md navbar-dark">
@@ -36,12 +37,59 @@
         </nav>
     </div>
 </header>
+<div id="page-content">
+  <!-- app display -->
+  <div class="container-md p-5">
+    <!-- empty list message -->
+    <p class="h2 text-center pb-5">Let's get started. Add a book!</p>
+    <!-- booklist container -->
+    <div id="bookList" class="d-flex flex-wrap">
+      <!-- Add Book Form -->
+      <div id="addBookCard" class="card card-book overflow-hidden">
+        <form class="row">
+          <!-- Title -->
+          <div class="col-md-12 form-floating">
+              <input type="text" class="form-control" data-book-prop="title" name="fname" placeholder="Enter your book title" required />
+              <label for="fname">Title</label>
+          </div>
+          <!-- Authors -->
+          <div class="col-12 form-floating">
+              <input type="text" class="form-control" data-book-prop="authorList" name="authorList" placeholder="Emma Smith, John Crouer" required />
+              <label for="authorList">Author(s) comma separated</label>
+          </div>
+          <!-- Subjects -->
+          <div class="col-12 form-floating">
+              <input type="text" class="form-control" data-book-prop="subjectList" name="subjectList" placeholder="Fiction, History, Manga" required />
+              <label for="subjectList">Subject(s) comma separated</label>
+          </div>
+          <!-- Year -->
+          <div class="col-12 form-floating">
+              <input type="number" class="form-control" data-book-prop="year" name="year" placeholder="1984" required />
+              <label for="subjectList">Year</label>
+          </div>
+          <!-- Pages -->
+          <div class="col-12 form-floating">
+              <input type="number" class="form-control" data-book-prop="pages" name="pages" placeholder="0" min="1" required />
+              <label for="subjectList">Pages</label>
+          </div>
+          <!-- Changes -->
+          <div class="btn-container-action col-12 d-flex justify-content-evenly">
+            <!-- Revert Changes -->
+            <button type="reset" class="btn btn-danger">Clear</button>
+            <!-- Accept Changes -->
+            <button type="submit" class="btn btn-success">Add</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
   <!-- noscript -->
   <noscript>Please enable Javascript, some features may not be available!</noscript>
   <!-- boostrap 5 js -->
 <!-- JavaScript Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
   <!-- custom js -->
-  <script src="./assets/javascript/main.js"></script>
+  <script type="module" src="./assets/javascript/main.js"></script>
 </body>
 </html>

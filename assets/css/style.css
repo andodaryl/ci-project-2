@@ -1,0 +1,50 @@
+/* CHARACTERISTICS */
+.hidden {
+  visibility: hidden;
+}
+
+/* CONTAINERS */
+/* bookList */
+#bookList {
+  gap: 1rem;
+}
+/* card-book */
+.card-book {
+  padding: 1rem;
+  width: 18rem;
+}
+
+.card-book input {
+  border: none;
+}
+.card-book input[type="text"] {
+  text-overflow: ellipsis;
+}
+.card-book label {
+  padding-left: 1.5rem;
+}
+
+/* btn-container-action */
+.btn-container-action .btn {
+  width: 7rem;
+}
+
+/* TEXT */
+.text-ellipsis {
+  display: inline-block; 
+  max-width: 250px; 
+  overflow: hidden; 
+  white-space: nowrap; 
+  text-overflow: ellipsis;
+}
+
+/* MEDIA QUERIES */
+@media only screen and (max-width: 576px) {
+  .text-ellipsis {
+    display: inline-block; 
+    max-width: 200px; 
+    overflow: hidden; 
+    white-space: nowrap; 
+    text-overflow: ellipsis;
+  }
+}
