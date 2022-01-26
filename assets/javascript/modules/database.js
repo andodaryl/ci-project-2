@@ -23,31 +23,31 @@ const Book = class {
 const data = {
   bookList: [],
   bookListUpdating:  false,
-  updateBookList(input, type) {
-    this.bookListUpdating = true // Activate debouncer
-    const oldBookList = this.bookList.slice()
+}
+const databaseAPI = {
+    updateBookList(input, type) {
+    data.bookListUpdating = true // Activate debouncer
+    const oldBookList = data.bookList.slice()
     // Push newBook or replace bookList with newBookList
     switch (type) {
       case TYPE_BOOK:
-        this.bookList.push(input)
+        data.bookList.push(input)
       break;
       case TYPE_BOOKLIST:
-        this.bookList = input
+        data.bookList = input
       break;
       default:
       console.error('Invalid type, could not update book list.')
     }
-    this.bookListUpdating = false // Deactivate debouncer
+    data.bookListUpdating = false // Deactivate debouncer
     return oldBookList
   },
-}
-const databaseAPI = {
   addBook({
     title = "Enter Title", totalPages = 0, authorList = [], subjectList = [], year  = 1984
     }) {
     if (data.bookListUpdating) return STATUS_UPDATING // Exit early if bookList is being updated
     let newBook = new Book({title, totalPages, authorList, subjectList, year})
-    data.updateBookList(newBook, TYPE_BOOK)
+    this.updateBookList(newBook, TYPE_BOOK)
     return newBook
   },
   deleteBooks([...bookNumberList]) {
@@ -59,7 +59,7 @@ const databaseAPI = {
     const booksDeleted = data.bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) > -1 )
     // Create newBookList with deleted books removed
     const newBookList = data.bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) < 0)
-    data.updateBookList(newBookList, TYPE_BOOKLIST) // Update bookList
+    this.updateBookList(newBookList, TYPE_BOOKLIST) // Update bookList
     return booksDeleted
   },
   searchList({...searchTermsObject}) {
