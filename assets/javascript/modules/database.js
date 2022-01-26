@@ -1,3 +1,4 @@
+// IMPORTS
 import CODE from './dictionary.js' // Public Dictionary
 
 // CLASSES
@@ -42,13 +43,15 @@ const databaseAPI = {
   addBook({
     title = "Enter Title", totalPages = 0, authorList = [], subjectList = [], year  = 1984
     }) {
-    if (data.bookListUpdating) return CODE.STATUS_UPDATING // Exit early if bookList is being updated
+    // Exit early if bookList is being updated
+    if (data.bookListUpdating) return CODE.STATUS_UPDATING
     let newBook = new Book({title, totalPages, authorList, subjectList, year})
     this.updateBookList(newBook, CODE.TYPE_BOOK)
     return newBook
   },
   deleteBooks([...bookNumberList]) {
-    if (data.bookListUpdating) return CODE.STATUS_UPDATING // Exit early if bookList is being updated
+    // Exit early if bookList is being updated
+    if (data.bookListUpdating) return CODE.STATUS_UPDATING
     // Sanitize bookNumberList & record valid results only
     const safeDeleteList = bookNumberList
     .map(bookNumber => parseInt(bookNumber)).filter(validResult => validResult)
@@ -67,7 +70,7 @@ const databaseAPI = {
       const value = searchTerm[1]
       switch(property) {
         case 'title':
-          // Check if searchTerm is in book titles: case insensitive
+          // Check if searchTerm is in book title: case insensitive
           return previousResults.filter(book => {
             const bookTitle = book[property].toLowerCase()
             const searchValue = value.toLowerCase()
@@ -86,13 +89,13 @@ const databaseAPI = {
             return bookPropList.some(item => searchPropList.indexOf(item.toLowerCase()) > -1) 
           })
       }
-      return previousResults.filter(book => book[property] == value)
     }, data.bookList.slice()
     )
     return searchResults
   },
   saveToBrowser(attempt = 0) {
-    if (data.bookListUpdating) return CODE.STATUS_UPDATING // Exit early if bookList is being updated
+    // Exit early if bookList is being updated
+    if (data.bookListUpdating) return CODE.STATUS_UPDATING
     if (attempt > 3) return CODE.STATUS_FAILURE // Exit with error if max attempt reached
     // Try to save to browser with three max attempts
     try {
