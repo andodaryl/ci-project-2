@@ -1,7 +1,7 @@
 // DICTIONARY
-const TYPEBOOK = 'BOOK'
-const TYPEBOOKLIST = 'BOOKLIST'
-const STATUSUPDATING = 'UPDATING'
+const TYPE_BOOK = 'BOOK'
+const TYPE_BOOKLIST = 'BOOKLIST'
+const STATUS_UPDATING = 'UPDATING'
 
 // CLASSES
 const Book = class {
@@ -28,10 +28,10 @@ const data = {
     const oldBookList = this.bookList.slice()
     // Push newBook or replace bookList with newBookList
     switch (type) {
-      case TYPEBOOK:
+      case TYPE_BOOK:
         this.bookList.push(input)
       break;
-      case TYPEBOOKLIST:
+      case TYPE_BOOKLIST:
         this.bookList = input
       break;
       default:
@@ -45,13 +45,13 @@ const databaseAPI = {
   addBook({
     title = "Enter Title", totalPages = 0, authorList = [], subjectList = [], year  = 1984
     }) {
-    if (data.bookListUpdating) return STATUSUPDATING // Exit early if bookList is being updated
+    if (data.bookListUpdating) return STATUS_UPDATING // Exit early if bookList is being updated
     let newBook = new Book({title, totalPages, authorList, subjectList, year})
-    data.updateBookList(newBook, TYPEBOOK)
+    data.updateBookList(newBook, TYPE_BOOK)
     return newBook
   },
   deleteBooks([...bookNumberList]) {
-    if (data.bookListUpdating) return STATUSUPDATING // Exit early if bookList is being updated
+    if (data.bookListUpdating) return STATUS_UPDATING // Exit early if bookList is being updated
     // Sanitize bookNumberList & record valid results only
     const safeDeleteList = bookNumberList
     .map(bookNumber => parseInt(bookNumber)).filter(validResult => validResult)
@@ -59,7 +59,7 @@ const databaseAPI = {
     const booksDeleted = data.bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) > -1 )
     // Create newBookList with deleted books removed
     const newBookList = data.bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) < 0)
-    data.updateBookList(newBookList, TYPEBOOKLIST) // Update bookList
+    data.updateBookList(newBookList, TYPE_BOOKLIST) // Update bookList
     return booksDeleted
   },
   searchList({...searchTermsObject}) {
@@ -95,15 +95,15 @@ const databaseAPI = {
     return searchResults
   },
   saveToBrowser() {
-    if (data.bookListUpdating) return STATUSUPDATING // Exit early if bookList is being updated
+    if (data.bookListUpdating) return STATUS_UPDATING // Exit early if bookList is being updated
     data.bookListUpdating = true // Activate debouncer
     window.localStorage.setItem('bookList', JSON.stringify(data.bookList));
     data.bookListUpdating = false // Deactivate debouncer
   },
   loadFromBrowser() {
-    if (data.bookListUpdating) return STATUSUPDATING // Exit early if bookList is being updated
+    if (data.bookListUpdating) return STATUS_UPDATING // Exit early if bookList is being updated
     const newBookList = JSON.parse(window.localStorage.getItem('user'));
-    updateBookList(newBookList, TYPEBOOKLIST)
+    updateBookList(newBookList, TYPE_BOOKLIST)
   },
 }
 
