@@ -99,4 +99,4 @@ const databaseAPI = {
 // EXPORT
 
 // export default databaseAPI // ES6 Syntax
-module.export = databaseAPI // testing
+module.exports = databaseAPI // testing
