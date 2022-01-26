@@ -43,22 +43,22 @@ const data = {
 }
 const databaseAPI = {
   addBook({
-    title  = "Enter Title", totalPages  = 0, authorList  = [], subjectList  = [], year  = 1984
+    title = "Enter Title", totalPages = 0, authorList = [], subjectList = [], year  = 1984
     }) {
     if (data.bookListUpdating) return STATUSUPDATING // Exit early if bookList is being updated
     let newBook = new Book({title, totalPages, authorList, subjectList, year})
     data.updateBookList(newBook, TYPEBOOK)
     return newBook
   },
-  deleteBooks(...bookNumberList) {
+  deleteBooks([...bookNumberList]) {
     if (data.bookListUpdating) return STATUSUPDATING // Exit early if bookList is being updated
     // Sanitize bookNumberList & record valid results only
     const safeDeleteList = bookNumberList
     .map(bookNumber => parseInt(bookNumber)).filter(validResult => validResult)
     // Find books to be deleted
-    const booksDeleted = bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) > -1 )
+    const booksDeleted = data.bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) > -1 )
     // Create newBookList with deleted books removed
-    const newBookList = bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) < 0)
+    const newBookList = data.bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) < 0)
     data.updateBookList(newBookList, TYPEBOOKLIST) // Update bookList
     return booksDeleted
   },
