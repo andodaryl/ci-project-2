@@ -45,13 +45,13 @@ const databaseAPI = {
   addBook({
     title  = "Enter Title", totalPages  = 0, authorList  = [], subjectList  = [], year  = 1984
     }) {
-    if data.bookListUpdating return STATUSUPDATING // Exit early if bookList is being updated
+    if (data.bookListUpdating) return STATUSUPDATING // Exit early if bookList is being updated
     let newBook = new Book({title, totalPages, authorList, subjectList, year})
     data.updateBookList(newBook, TYPEBOOK)
     return newBook
   },
   deleteBooks(...bookNumberList) {
-    if data.bookListUpdating return STATUSUPDATING // Exit early if bookList is being updated
+    if (data.bookListUpdating) return STATUSUPDATING // Exit early if bookList is being updated
     // Sanitize bookNumberList & record valid results only
     const safeDeleteList = bookNumberList
     .map(bookNumber => parseInt(bookNumber)).filter(validResult => validResult)
@@ -63,7 +63,6 @@ const databaseAPI = {
     return booksDeleted
   },
   searchList({...searchTermsObject}) {
-    const data.bookList = data.bookList.slice()
     const searchTermsArray = Object.entries(searchTermsObject)
     // Filters & refines bookList according to searchTerms
     const searchResults = searchTermsArray.reduce( searchResults, searchTerm => {
