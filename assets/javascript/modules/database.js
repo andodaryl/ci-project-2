@@ -88,6 +88,8 @@ const databaseAPI = {
             const searchPropList = value.map(item => item.toLowerCase())
             return bookPropList.some(item => searchPropList.indexOf(item.toLowerCase()) > -1) 
           })
+        default:
+          return previousResults // No change
       }
     }, data.bookList.slice()
     )
