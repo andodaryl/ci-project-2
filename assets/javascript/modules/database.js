@@ -88,11 +88,7 @@ const databaseAPI = {
     )
     return searchResults
   },
-  saveToBrowser(attempt = 0) {
-    // Exit early if bookList is being updated
-    if (data.bookListUpdating) return CODE.STATUS_TYPE.UPDATING
-    if (attempt > 3) return CODE.STATUS_TYPE.FAILURE // Exit with error if max attempt reached
-    // Try to save to browser with three max attempts
+  saveToBrowser() {
     try {
       // Attempt to save
       const bookListString = JSON.stringify(data.bookList)
@@ -101,14 +97,11 @@ const databaseAPI = {
       // Log error
       error => console.error('Save to browser failed, attempting again - error: ' + error)
       // Attempt to save again
-      const newAttempt = attempt + 1
-      this.saveToBrowser(newAttempt)
+      this.saveToBrowser()
     }
     return CODE.STATUS_TYPE.SUCCESS
   },
-  loadFromBrowser(attempt = 0) {
-    if (attempt > 3) return CODE.STATUS_TYPE.FAILURE // Exit with error if max attempt reached
-    // Try to load from browser with three max attempts
+  loadFromBrowser() {
     try {
       // Attempt to retrieve stored bookList
       const storedBookList = JSON.parse(localStorage.getItem('bookList'));
@@ -117,8 +110,7 @@ const databaseAPI = {
       // Log error
       error => console.error('Load from browser failed, attempting again - error: ' + error)
       // Attempt to load again
-      const newAttempt = attempt + 1
-      this.loadFromBrowser(newAttempt)
+      this.loadFromBrowser()
     }
     return CODE.STATUS_TYPE.SUCCESS
   },
