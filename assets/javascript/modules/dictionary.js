@@ -1,11 +1,21 @@
 // PUBLIC DICTIONARY
 
 const CODE = {
-  STATUS_UPDATING: 'UPDATING',
-  STATUS_SUCCESS: 'SUCCESS',
-  STATUS_FAILURE:'FAILURE',
-  TYPE_BOOK: 'BOOK',
-  TYPE_BOOKLIST: 'BOOKLIST',
+  STATUS_TYPE: {
+    SUCCESS: 'SUCCESS',
+    FAILURE: 'FAILURE',
+  },
+  OBJ_TYPE: {
+    BOOK: 'BOOK',
+    BOOKLIST: 'BOOKLIST',
+  },
+  FIELD_TYPE: {
+    TITLE: 'title',
+    TOTALPAGES: 'totalPages',
+    YEAR: 'year',
+    AUTHORLIST: 'authorList',
+    SUBJECTLIST: 'subjectList'
+  }
 }
 
 export default CODE

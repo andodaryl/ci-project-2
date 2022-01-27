@@ -14,7 +14,7 @@ const displayAPI = {
     // Exit early if invalid input
     if (!bookId) {
       console.error('Invalid bookId')
-      return CODE.STATUS_FAILURE
+      return CODE.STATUS_TYPE.FAILURE
     }
     const clone = sampleBook.cloneNode(true)
     const actionBtnContainer = clone.querySelector('.action-btn-container')
