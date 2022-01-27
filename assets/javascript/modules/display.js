@@ -25,7 +25,8 @@ const displayAPI = {
     this.removeBook = this.removeBook.bind(this)
     // Default states
     clone.setAttribute('data-book-id', bookId)
-    clone.classList.toggle('visually-hidden')
+    clone.classList.toggle('d-none')
+    clone.removeAttribute('aria-hidden')
     this.toggleVisibility(actionBtnContainer)
     // Component behaviour
     // container
