@@ -20,11 +20,9 @@ const Book = class {
 // DATABASE
 const data = {
   bookList: [],
-  bookListUpdating:  false,
 }
 const databaseAPI = {
     updateBookList(input, type) {
-    data.bookListUpdating = true // Activate debouncer
     const oldBookList = data.bookList.slice()
     // Push newBook or replace bookList with newBookList
     switch (type) {
@@ -37,21 +35,16 @@ const databaseAPI = {
       default:
       console.error('Invalid type, could not update book list.')
     }
-    data.bookListUpdating = false // Deactivate debouncer
     return oldBookList
   },
   addBook({
     title = "Enter Title", totalPages = 0, authorList = [], subjectList = [], year  = 1984
     }) {
-    // Exit early if bookList is being updated
-    if (data.bookListUpdating) return CODE.STATUS_UPDATING
     let newBook = new Book({title, totalPages, authorList, subjectList, year})
     this.updateBookList(newBook, CODE.TYPE_BOOK)
     return newBook
   },
   deleteBooks([...bookNumberList]) {
-    // Exit early if bookList is being updated
-    if (data.bookListUpdating) return CODE.STATUS_UPDATING
     // Sanitize bookNumberList & record valid results only
     const safeDeleteList = bookNumberList
     .map(bookNumber => parseInt(bookNumber)).filter(validResult => validResult)
@@ -114,9 +107,7 @@ const databaseAPI = {
     return CODE.STATUS_SUCCESS
   },
   loadFromBrowser(attempt = 0) {
-    if (data.bookListUpdating) return CODE.STATUS_UPDATING // Exit early if bookList is being updated
     if (attempt > 3) return CODE.STATUS_FAILURE // Exit with error if max attempt reached
-    data.bookListUpdating = true // Activate debouncer
     // Try to load from browser with three max attempts
     try {
       // Attempt to retrieve stored bookList
@@ -129,7 +120,6 @@ const databaseAPI = {
       const newAttempt = attempt + 1
       this.loadFromBrowser(newAttempt)
     }
-    data.bookListUpdating = false // Deactivate debouncer
     return CODE.STATUS_SUCCESS
   },
 }
