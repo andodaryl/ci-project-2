@@ -38,46 +38,55 @@
     </div>
 </header>
 <div id="page-content">
-  <!-- app display -->
+  <!-- app container -->
   <div class="container-md p-5">
     <!-- empty list message -->
     <p class="h2 text-center pb-5">Let's get started. Add a book!</p>
-    <!-- booklist container -->
-    <div id="bookList" class="d-flex flex-wrap">
-      <!-- add book form -->
-      <div id="addBookCard" class="card card-book overflow-hidden">
-        <form class="row">
-          <!-- Title -->
+    <!-- display container -->
+    <div id="display" class="d-flex flex-wrap">
+      <!-- add book function -->
+      <div id="addBookCard" class="d-flex justify-content-center card">
+        <button id="addBookBtn" class="btn">
+          <p class="fs-2">
+            Create New
+            <i class="bi bi-plus-lg"></i>
+          </p>
+        </button>
+      </div>
+      <!-- sample book -->
+      <div class="card card-book overflow-hidden" data-book-id="sampleBook">
+        <form class="row g-2">
+          <!-- title -->
           <div class="col-md-12 form-floating">
-              <input type="text" class="form-control" data-book-prop="title" name="fname" placeholder="Enter your book title" required />
+              <input type="text" class="form-control" data-book-prop="title" name="fname" placeholder="Enter your book title" value="This is an example to showcase readonly functionality" required readonly/>
               <label for="fname">Title</label>
           </div>
-          <!-- Authors -->
+          <!-- authors -->
           <div class="col-12 form-floating">
-              <input type="text" class="form-control" data-book-prop="authorList" name="authorList" placeholder="Emma Smith, John Crouer" required />
-              <label for="authorList">Author(s) comma separated</label>
+              <input type="text" class="form-control" data-book-prop="authorList" name="authorList" placeholder="Emma Smith, John Crouer" value="This is an example to showcase readonly functionality" required readonly/>
+              <label for="authorList">Author(s)</label>
           </div>
-          <!-- Subjects -->
+          <!-- subjects -->
           <div class="col-12 form-floating">
-              <input type="text" class="form-control" data-book-prop="subjectList" name="subjectList" placeholder="Fiction, History, Manga" required />
-              <label for="subjectList">Subject(s) comma separated</label>
+              <input type="text" class="form-control" data-book-prop="subjectList" name="subjectList" placeholder="Fiction, History, Manga" value="This is an example to showcase readonly functionality" required readonly/>
+              <label for="subjectList">Subject(s)</label>
           </div>
-          <!-- Year -->
-          <div class="col-12 form-floating">
-              <input type="number" class="form-control" data-book-prop="year" name="year" placeholder="1984" required />
+          <!-- year -->
+          <div class="col-6 form-floating">
+              <input type="number" class="form-control" data-book-prop="year" name="year" placeholder="2022" value="2022" required readonly/>
               <label for="subjectList">Year</label>
           </div>
-          <!-- Pages -->
-          <div class="col-12 form-floating">
-              <input type="number" class="form-control" data-book-prop="pages" name="pages" placeholder="0" min="1" required />
+          <!-- pages -->
+          <div class="col-6 form-floating">
+              <input type="number" class="form-control" data-book-prop="pages" name="pages" placeholder="0" min="1" value="0" required readonly/>
               <label for="subjectList">Pages</label>
           </div>
-          <!-- Changes -->
-          <div class="btn-container-action col-12 d-flex justify-content-evenly">
-            <!-- Revert Changes -->
-            <button type="reset" class="btn btn-danger">Clear</button>
-            <!-- Accept Changes -->
-            <button type="submit" class="btn btn-success">Add</button>
+          <!-- action buttons -->
+          <div id="actionBtnContainer" class="col-12 d-flex justify-content-evenly">
+            <!-- delete book -->
+            <button type="button" data-action-type="delete" class="btn btn-danger">Delete</button>
+            <!-- change book details -->
+            <button type="button" data-action-type="change" class="btn btn-success">Edit</button>
         </div>
         </form>
       </div>
