@@ -15,6 +15,10 @@
 #display {
   gap: 1rem;
 }
+/* form-floating */
+.form-floating label {
+  padding-left: 1rem;
+}
 /* card-book */
 .card-book {
   padding: 1rem;
@@ -29,9 +33,6 @@
 }
 .card-book input[type="text"] {
   text-overflow: ellipsis;
-}
-.card-book label {
-  padding-left: 1rem;
 }
 .card-book .action-btn-container {
   margin-top: 1rem;
