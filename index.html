@@ -42,11 +42,56 @@
   <div class="container-md p-5">
     <!-- empty list message -->
     <p class="h2 text-center pb-5">Let's get started. Add a book!</p>
+    <!-- modal add book -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-capitalize" id="exampleModalLongTitle">Book Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            </button>
+          </div>
+          <div class="modal-body">
+            <form class="row g-2">
+              <!-- title -->
+              <div class="col-md-12 form-floating">
+                  <input type="text" class="form-control" data-book-prop="title" name="fname" placeholder="Enter your book title" value="This is an example to showcase readonly functionality" required/>
+                  <label for="fname">Title</label>
+              </div>
+              <!-- authors -->
+              <div class="col-12 form-floating">
+                  <input type="text" class="form-control" data-book-prop="authorList" name="authorList" placeholder="Emma Smith, John Crouer" value="This is an example to showcase readonly functionality" required/>
+                  <label for="authorList">Author(s) Comma Separated</label>
+              </div>
+              <!-- subjects -->
+              <div class="col-12 form-floating">
+                  <input type="text" class="form-control" data-book-prop="subjectList" name="subjectList" placeholder="Fiction, History, Manga" value="This is an example to showcase readonly functionality" required/>
+                  <label for="subjectList">Subject(s) Comma Separated</label>
+              </div>
+              <!-- year -->
+              <div class="col-6 form-floating">
+                  <input type="number" class="form-control" data-book-prop="year" name="year" placeholder="2022" value="2022" required/>
+                  <label for="subjectList">Year</label>
+              </div>
+              <!-- pages -->
+              <div class="col-6 form-floating">
+                  <input type="number" class="form-control" data-book-prop="pages" name="pages" placeholder="0" min="1" value="0" required/>
+                  <label for="subjectList">Pages</label>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+            <button id="addBookBtn" type="button" class="btn btn-success">Create</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- display container -->
     <div id="display" class="d-flex flex-wrap">
-      <!-- add book function -->
-      <div id="addBookCard" class="d-flex justify-content-center card">
-        <button id="addBookBtn" class="btn">
+      <!-- show modal btn -->
+      <div id="showModalCard" class="d-flex justify-content-center card">
+        <button id="showModalBtn" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModalCenter">
           <p class="fs-2">
             Create New
             <i class="bi bi-plus-lg"></i>
