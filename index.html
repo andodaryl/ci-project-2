@@ -54,7 +54,7 @@
         </button>
       </div>
       <!-- sample book -->
-      <div class="card card-book overflow-hidden" data-book-id="sampleBook">
+      <div class="card card-book overflow-hidden visually-hidden" data-book-id="sampleBook">
         <form class="row g-2">
           <!-- title -->
           <div class="col-md-12 form-floating">
@@ -82,11 +82,11 @@
               <label for="subjectList">Pages</label>
           </div>
           <!-- action buttons -->
-          <div id="actionBtnContainer" class="col-12 d-flex justify-content-evenly">
+          <div class="action-btn-container col-12 d-flex justify-content-evenly">
             <!-- delete book -->
-            <button type="button" data-action-type="delete" class="btn btn-danger">Delete</button>
+            <button type="button" data-action-type="delete" class="btn btn-danger text-capitalize">delete</button>
             <!-- change book details -->
-            <button type="button" data-action-type="change" class="btn btn-success">Edit</button>
+            <button type="button" data-action-type="edit" class="btn btn-success text-capitalize">edit</button>
         </div>
         </form>
       </div>

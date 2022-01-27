@@ -33,10 +33,10 @@
 .card-book label {
   padding-left: 1rem;
 }
-.card-book #actionBtnContainer {
+.card-book .action-btn-container {
   margin-top: 1rem;
 }
-.card-book #actionBtnContainer .btn {
+.card-book .action-btn-container .btn {
   width: 7rem;
 }
 /* addBookCard */
