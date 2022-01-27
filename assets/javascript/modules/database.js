@@ -23,7 +23,7 @@ const data = {
 }
 const databaseAPI = {
     updateBookList(input, type) {
-    const oldBookList = data.bookList.slice()
+    const oldBookList = [...data.bookList]
     // Push newBook or replace bookList with newBookList
     switch (type) {
       case CODE.OBJ_TYPE.BOOK:
@@ -84,7 +84,7 @@ const databaseAPI = {
         default:
           return previousResults // No change
       }
-    }, data.bookList.slice()
+    }, [...data.bookList]
     )
     return searchResults
   },
