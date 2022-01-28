@@ -10,6 +10,11 @@ const CODE = {
     BOOKLIST: 'BOOKLIST',
     BOOKFIELD: 'BOOKFIELD'
   },
+  MATCH_TYPE: {
+    NONE: 'NONE',
+    SOME: 'SOME',
+    EXACT: 'EXACT'
+  },
   FIELD_TYPE: {
     ID: 'id',
     TITLE: 'title',
