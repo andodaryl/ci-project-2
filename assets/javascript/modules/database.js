@@ -229,37 +229,45 @@ const databaseAPI = {
     return RESULT
   },
   searchList({...searchTermsObject}) {
-    const searchTermsArray = Object.entries(searchTermsObject)
-    // Filters & refines bookList according to searchTerms
-    const searchResults = searchTermsArray.reduce((previousResults, searchTerm) => {
-      const property = searchTerm[0]
-      const value = searchTerm[1]
-      switch(property) {
-        case CODE.FIELD_TYPE.TITLE:
-          // Check if searchTerm is in book title: case insensitive
-          return previousResults.filter(book => {
-            const bookTitle = book[property].toLowerCase()
-            const searchValue = value.toLowerCase()
-            return bookTitle.includes(searchValue)
-          })
-        case CODE.FIELD_TYPE.TOTALPAGES:
-        case CODE.FIELD_TYPE.YEAR:
-          // Check if book and search numbers match
-          return previousResults.filter(book => book[property] === parseInt(value))
-        case CODE.FIELD_TYPE.AUTHORLIST:
-        case CODE.FIELD_TYPE.SUBJECTLIST:
-          // Check if some author/subjects in book are in searchTerm array: case insensitive
-          return previousResults.filter(book => {
-            const bookPropList = book[property]
-            const searchPropList = value.map(item => item.toLowerCase())
-            return bookPropList.some(item => searchPropList.indexOf(item.toLowerCase()) > -1) 
-          })
-        default:
-          return previousResults // No change
+    let RESULT // searchResults or STATUS_FAILURE
+    try {
+      // Filters & refines BOOKLIST according to searchTerms
+      const filteringLogic = (previousResults, currentSearchTerm) => {
+        const safeData = this.getSafeData(currentSearchTerm, CODE.OBJ_TYPE.BOOKFIELD)
+        const [FIELD_TYPE, FIELD_VALUE] = safeData
+        switch(FIELD_TYPE) {
+          case CODE.FIELD_TYPE.TITLE:
+            // Check match in book title: case insensitive
+            return previousResults.filter(BOOK => {
+              const bookTitle = BOOK[FIELD_TYPE].toLowerCase()
+              return bookTitle.includes(FIELD_VALUE.toLowerCase())
+            })
+          case CODE.FIELD_TYPE.TOTALPAGES:
+          case CODE.FIELD_TYPE.YEAR:
+            // Check if book + search numbers match
+            return previousResults.filter(BOOK => BOOK[FIELD_TYPE] === FIELD_VALUE)
+          case CODE.FIELD_TYPE.AUTHORLIST:
+          case CODE.FIELD_TYPE.SUBJECTLIST:
+            // Check if some author/subjects in book are in subSearchTerms: case insensitive
+            return previousResults.filter(BOOK => {
+              const BOOKFIELD = BOOK[FIELD_TYPE]
+              const subSearchTerms = FIELD_VALUE.map(item => item.toLowerCase())
+              return BOOKFIELD.some(item => subSearchTerms.indexOf(item.toLowerCase()) > -1) 
+            })
+          default:
+            return previousResults // No change
+        }
       }
-    }, [...data.bookList]
-    )
-    return searchResults
+      // Activate process
+      const safeBookList = this.getSafeData(data.bookList, CODE.OBJ_TYPE.BOOKLIST)
+      const searchTermsArray = Object.entries(searchTermsObject)
+      const searchResults = searchTermsArray.reduce(filteringLogic, safeBookList)
+      RESULT = searchResults
+    } catch (error) {
+      console.error('Could not complete search: ' + error)
+      RESULT = CODE.STATUS_TYPE.FAILURE
+    }
+    return RESULT
   },
   saveToBrowser() {
     let RESULT // STATUS_SUCCESS or FAILURE
