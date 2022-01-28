@@ -3,7 +3,6 @@ import CODE from './dictionary.js' // Public Dictionary
 
 // DEFAULT DATA
 const metaData = {
-  currentYear: new Date().getFullYear(),
   getUniqueInteger() {
     return Date.now()
   },
@@ -12,7 +11,7 @@ const metaData = {
     book: {
       title: 'Enter Title',
       totalPages: 0,
-      year: this.currentYear,
+      year: new Date().getFullYear(),
       authorList: [],
       subjectList: [],
     }
