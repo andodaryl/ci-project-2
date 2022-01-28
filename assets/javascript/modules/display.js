@@ -4,7 +4,7 @@ import CODE from './dictionary.js' // Public Dictionary
 
 // CONFIG
 const config = {
-  bookList: []
+  BOOKLIST: []
 }
 
 // ELEMENTS
@@ -61,9 +61,9 @@ const displayAPI = {
     try {
       const BOOK = bookData
       const safeBook = databaseAPI.getSafeData(BOOK, CODE.OBJ_TYPE.BOOK)
-      const bookExists = config.bookList
+      const bookExists = config.BOOKLIST
       .some(BOOK => BOOK[CODE.FIELD_TYPE.ID] === safeBook[CODE.FIELD_TYPE.ID])
-      // Exit early if book does not exist in display booklist
+      // Exit early if book does not exist in display BOOKLIST
       if (!bookExists) throw 'Book with id[' + safeBook[CODE.FIELD_TYPE.ID] + '] does not exist'
       // Create book card
       const newBookCard = components.BookCard(safeBook)
@@ -74,57 +74,57 @@ const displayAPI = {
     }
   },
   addBookData({...bookData}) {
-    let RESULT // newBookList or STATUS_FAILURE
+    let RESULT // newBOOKLIST or STATUS_FAILURE
     try {
       const BOOK = bookData
       const safeNewBook = databaseAPI.getSafeData(BOOK, CODE.OBJ_TYPE.BOOK)
-      const oldBookList = [...config.bookList]
-      const newBookList = []
-      const updateNewBookList = (bookList) => {
-        newBookList.push(...bookList)
+      const oldBOOKLIST = [...config.BOOKLIST]
+      const newBOOKLIST = []
+      const updateNewBOOKLIST = (BOOKLIST) => {
+        newBOOKLIST.push(...BOOKLIST)
       }
       // Check if book exists in display book list
-      const existingBook = oldBookList
+      const existingBook = oldBOOKLIST
       .some(BOOK => BOOK[CODE.FIELD_TYPE.ID] === safeNewBook[CODE.FIELD_TYPE.ID])
       // Replace existing book with new version else add new book to list
       if (existingBook) {
         const existingBookRemoved = this.removeBookData(safeNewBook[CODE.FIELD_TYPE.ID])
-        updateNewBookList(...existingBookRemoved, safeNewBook)
+        updateNewBOOKLIST(...existingBookRemoved, safeNewBook)
       } else {
-        updateNewBookList(...oldBookList, safeNewBook)
+        updateNewBOOKLIST(...oldBOOKLIST, safeNewBook)
       }
-      RESULT = newBookList
+      RESULT = newBOOKLIST
     } catch (error) {
-      console.error('Could not add book to display bookList: ' + error)
+      console.error('Could not add book to display BOOKLIST: ' + error)
       RESULT = CODE.STATUS_TYPE.FAILURE
     }
     return RESULT
   },
   removeBookData(...bookIdList) {
-    let RESULT // newBookList or STATUS_FAILURE
+    let RESULT // newBOOKLIST or STATUS_FAILURE
     try {
-      // Get bookList excluding books with target ids
+      // Get BOOKLIST excluding books with target ids
       const safeIdList = bookIdList.map(id => {
         const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
         getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
       })
-      const newBookList = config.bookList
+      const newBOOKLIST = config.BOOKLIST
       .filter(BOOK => !safeIdList.includes(BOOK[CODE.OBJ_TYPE.ID]))
       // Return book list with target books removed
-      RESULT = newBookList
+      RESULT = newBOOKLIST
     } catch (error) {
       console.error('Could not create book list with target books removed: ' + error)
       RESULT = CODE.STATUS_TYPE.FAILURE
     }
     return RESULT
   },
-  updateBookData(...bookList) {
+  updateBookData(...BOOKLIST) {
     let RESULT // STATUS_SUCCESS or FAILURE
     try {
-      const safeBookList = getSafeData(bookList, CODE.OBJ_TYPE.BOOKLIST)
-      // Clear booklist & push new books
-      config.bookList.length = 0
-      config.bookList.push(...safeBookList)
+      const safeBOOKLIST = getSafeData(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
+      // Clear BOOKLIST & push new books
+      config.BOOKLIST.length = 0
+      config.BOOKLIST.push(...safeBOOKLIST)
       RESULT = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
       console.error('Could not update display book list: ' + error)
@@ -133,10 +133,32 @@ const displayAPI = {
     return RESULT
   },
   showBook(...bookIdList) {
-    for (let index = 0; index < bookList.length; index++) {
-      const book = bookList[index];
-      display.appendChild(book)
+    let RESULT // STATUS_SUCCESS or FAILURE
+    try {
+      const BOOKLIST = [...config.BOOKLIST]
+      // Sanitize data
+      const safeIdList = bookIdList.map(id => {
+        const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
+        const safeField = getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
+        const safeId = safeField[0]
+        return safeId
+      })
+      // Only target existing books
+      const validIdList = BOOKLIST
+      .filter(BOOK => safeIdList.includes(BOOK[CODE.FIELD_TYPE.ID]))
+      for (let index = 0; index < validIdList.length; index++) {
+        const validId = validIdList[index];
+        const BOOK = BOOKLIST.find(BOOK => BOOK[CODE.FIELD_TYPE.ID] === validId)
+        const newBookCard = this.createBookCard(BOOK)
+        // Show BookCard in display for target book
+        display.appendChild(newBookCard)
+      }
+      RESULT = CODE.STATUS_TYPE.SUCCESS
+    } catch (error) {
+      console.error('Could not display target books: ' + error)
+      RESULT = CODE.STATUS_TYPE.FAILURE
     }
+    return RESULT
   },
   hideBook(...bookIdList) {
     try {
