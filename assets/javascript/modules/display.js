@@ -163,7 +163,6 @@ const displayAPI = {
   hideBook(...bookIdList) {
     let RESULT // STATUS_SUCCESS or FAILURE
     try {
-      const BOOKLIST = [...config.BOOKLIST]
       // Sanitize data
       const safeIdList = bookIdList.map(id => {
         const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
@@ -172,12 +171,14 @@ const displayAPI = {
         return safeId
       })
       // Only target existing books
+      const BOOKLIST = [...config.BOOKLIST]
       const validIdList = BOOKLIST
       .filter(BOOK => safeIdList.includes(BOOK[CODE.FIELD_TYPE.ID]))
+      // Delete target BookCards
       for (let index = 0; index < validIdList.length; index++) {
         const validId = validIdList[index];
-        // Hide BookCard in display for target book
-        display.appendChild(newBookCard)
+        const BookCard = display.querySelector(`data-book-id="${validId}"`)
+        BookCard.remove()        
       }
       RESULT = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
