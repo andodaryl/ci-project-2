@@ -195,12 +195,17 @@ const databaseAPI = {
     }
     return oldBookList
   },
-  addBook({
-    title = "Enter Title", totalPages = 0, authorList = [], subjectList = [], year  = 1984
-    }) {
-    let newBook = new Book({title, totalPages, authorList, subjectList, year})
-    this.updateBookList(newBook, CODE.OBJ_TYPE.BOOK)
-    return newBook
+  addBook({...bookData}) {
+    let RESULT // BOOK or STATUS_FAILURE
+    try {
+      const BOOK = new Book(...bookData) // Contains data validation
+      this.updateBookList(BOOK, CODE.OBJ_TYPE.BOOK)
+      RESULT = BOOK
+    } catch (error) {
+      console.error('Could not add book to database: ' + error)
+      RESULT = CODE.STATUS_TYPE.FAILURE
+    }
+    return RESULT
   },
   deleteBooks([...bookNumberList]) {
     // Sanitize bookNumberList & record valid results only
