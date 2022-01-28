@@ -21,13 +21,14 @@ const metaData = {
 Object.freeze(metaData) // Prevent changes to metaData
 
 // CLASSES
-const Book = class {
-  constructor() {
-    // Create properties from default values
-    const BOOKFIELDS = Object.entries(metaData.default.book)
+class Book {
+  constructor({...bookData}) {
+    // Get safe book data
+    const BOOK = bookData
+    const safeBookData = databaseAPI.getSafeData(BOOK, CODE.OBJ_TYPE.BOOK)
+    // Create instance properties from safe book data + new unique id
+    const BOOKFIELDS = Object.entries(safeBookData)
     BOOKFIELDS.forEach(BOOKFIELD => this[BOOKFIELD[0]] = BOOKFIELD[1])
-    // Create new unique id
-    this[CODE.FIELD_TYPE.ID] = metaData.getUniqueInteger()
   }
 }
 
