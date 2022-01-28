@@ -185,6 +185,7 @@ const databaseAPI = {
     try {
       const safeInput1 = this.getSafeData(input1, type)
       const safeInput2 = this.getSafeData(input2, type)
+      let isExactMatch, isPartialMatch
       switch(type) {
         case CODE.OBJ_TYPE.BOOKFIELD:
           const BOOKFIELD1 = safeInput1
@@ -196,12 +197,12 @@ const databaseAPI = {
         case CODE.OBJ_TYPE.BOOK:
           const bookData1 = Object.entries(safeInput1)
           const bookData2 = Object.entries(safeInput2)
-          const isExactMatch = bookData1.every(BOOKFIELD1 => 
+          isExactMatch = bookData1.every(BOOKFIELD1 => 
             bookData2.every(
               BOOKFIELD2 => this.matchData(BOOKFIELD1, BOOKFIELD2, CODE.OBJ_TYPE.BOOKFIELD)
             )
           )
-          const isPartialMatch = bookData1.some(BOOKFIELD1 => 
+          isPartialMatch = bookData1.some(BOOKFIELD1 => 
             bookData2.some(
               BOOKFIELD2 => this.matchData(BOOKFIELD1, BOOKFIELD2, CODE.OBJ_TYPE.BOOKFIELD)
             )
@@ -215,12 +216,12 @@ const databaseAPI = {
           case CODE.OBJ_TYPE.BOOKLIST:
             const BOOKLIST1 = Object.entries(safeInput1)
             const BOOKLIST2 = Object.entries(safeInput2)
-            const isExactMatch = BOOKLIST1.every(BOOK1 => 
+            isExactMatch = BOOKLIST1.every(BOOK1 => 
               BOOKLIST2.every(
                 BOOK2 => this.matchData(BOOK1, BOOK2, CODE.OBJ_TYPE.BOOKFIELD)
               )
             )
-            const isPartialMatch = BOOKLIST1.some(BOOK1 => 
+            isPartialMatch = BOOKLIST1.some(BOOK1 => 
               BOOKLIST2.some(
                 BOOK2 => this.matchData(BOOK1, BOOK2, CODE.OBJ_TYPE.BOOKFIELD)
               )
