@@ -8,8 +8,10 @@ const CODE = {
   OBJ_TYPE: {
     BOOK: 'BOOK',
     BOOKLIST: 'BOOKLIST',
+    BOOKFIELD: 'BOOKFIELD'
   },
   FIELD_TYPE: {
+    ID: 'id',
     TITLE: 'title',
     TOTALPAGES: 'totalPages',
     YEAR: 'year',
