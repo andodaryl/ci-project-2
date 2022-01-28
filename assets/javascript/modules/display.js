@@ -161,15 +161,58 @@ const displayAPI = {
     return RESULT
   },
   hideBook(...bookIdList) {
+    let RESULT // STATUS_SUCCESS or FAILURE
     try {
-      for (let index = 0; index < bookIdList.length; index++) {
-        const bookId = bookIdList[index];
-        const targetBook = document.querySelector(`[data-book-id="${bookId}"]`)
-        targetBook.remove()
+      const BOOKLIST = [...config.BOOKLIST]
+      // Sanitize data
+      const safeIdList = bookIdList.map(id => {
+        const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
+        const safeField = getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
+        const safeId = safeField[0]
+        return safeId
+      })
+      // Only target existing books
+      const validIdList = BOOKLIST
+      .filter(BOOK => safeIdList.includes(BOOK[CODE.FIELD_TYPE.ID]))
+      for (let index = 0; index < validIdList.length; index++) {
+        const validId = validIdList[index];
+        // Hide BookCard in display for target book
+        display.appendChild(newBookCard)
       }
+      RESULT = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
-      console.error(error)
+      console.error('Could not hide target books: ' + error)
+      RESULT = CODE.STATUS_TYPE.FAILURE
     }
+    return RESULT
+  },
+  checkDisplay() {
+    let RESULT // bookIdList or STATUS_FAILURE
+    try {
+      // Find & sanitise ids of BookCards on display
+      const idList = display.querySelectorAll(['data-book-id'])
+      const validIdList = []
+      for (let index = 0; index < idList.length; index++) {
+        const id = idList[index];
+        const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
+        const validField = databaseAPI.checkDataIntegrity(BOOKFIELD, CODE.FIELD_TYPE)
+        const validId = validField[1]
+        validIdList.push(validId)
+      }
+      const safeIdList = validIdList.map(validId => {
+        const BOOKFIELD = [CODE.FIELD_TYPE.ID, validId]
+        const safeField = databaseAPI.getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
+        const safeId = safeField[1]
+        return safeId
+      })
+      // Return valid books on display
+      const bookIdList = safeIdList
+      RESULT = bookIdList
+    } catch (error) {
+      console.error('Could not retrieve books being displayed: ' + error)
+      RESULT = CODE.STATUS_TYPE.FAILURE
+    }
+    return RESULT
   }
 }
 
