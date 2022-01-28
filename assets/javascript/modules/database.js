@@ -2,33 +2,32 @@
 import CODE from './dictionary.js' // Public Dictionary
 
 // DEFAULT DATA
-const defaultData = {
-  currentYear = new Date().getFullYear(),
-  bookList = [],
-  book = {
-    id = 0,
-    title = '',
-    totalPages = 0,
-    year = this.currentYear,
-    authorList: [],
-    subjectList: [],
+const metaData = {
+  currentYear: new Date().getFullYear(),
+  getUniqueLabel() {
+    return Date.now()
+  },
+  default: {
+    bookList: [],
+    book: {
+      title: 'Enter Title',
+      totalPages: 0,
+      year: this.currentYear,
+      authorList: [],
+      subjectList: [],
+    }
   }
 }
-Object.freeze(defaultData) // Prevent changes to defaultData
+Object.freeze(metaData) // Prevent changes to metaData
 
 // CLASSES
 const Book = class {
-  // ID system for books: pre-increment currentBookNumber & assign ID to new value
-  static currentBookNumber = 0
-  constructor({
-    title = "Enter Title", totalPages = 0, authorList = [], subjectList = [], year = 1984
-    }) {
-    this.bookNumber = ++this.constructor.currentBookNumber
-    this.title = title
-    this.totalPages = totalPages
-    this.authorList = authorList
-    this.subjectList = subjectList
-    this.year = parseInt(year)
+  constructor() {
+    // Create properties from default values
+    const BOOKFIELDS = Object.entries(metaData.default.book)
+    BOOKFIELDS.forEach(BOOKFIELD => this[BOOKFIELD[0]] = BOOKFIELD[1])
+    // Create new unique id
+    this[CODE.FIELD_TYPE.ID] = metaData.getUniqueLabel()
   }
 }
 
@@ -37,9 +36,6 @@ const data = {
   bookList: [],
 }
 const databaseAPI = {
-    getNewId() {
-      return Date.now()
-    },
     isObjectLiteral(input) {
     return input.constructor === Book || input.constructor === Object ? true : false
     },
@@ -123,7 +119,7 @@ const databaseAPI = {
               updateSafeBookList(safeBooksFound)
             } else {
               // Use default values
-              updateSafeBookList(defaultData.bookList)
+              updateSafeBookList(metaData.default.bookList)
             }
             RESULT = safeBookList
             break;
@@ -166,7 +162,7 @@ const databaseAPI = {
             } else {
               // Get default bookfield values
               const FIELD_TYPE = BOOKFIELD[0]
-              const FIELD_VALUE = defaultData.book[FIELD_TYPE]
+              const FIELD_VALUE = metaData.default.book[FIELD_TYPE]
               const defaultField = [FIELD_TYPE, FIELD_VALUE]
               // Use default values
               updateSafeField(defaultField)
@@ -269,7 +265,7 @@ const databaseAPI = {
     try {
       // Check for stored data & sanitize, else use default if empty
       const dataFound = localStorage.getItem(CODE.DATASTORE_LABEL)
-      const parsedData = dataFound ? JSON.parse(dataFound) : [...defaultData.bookList]
+      const parsedData = dataFound ? JSON.parse(dataFound) : [...metaData.default.bookList]
       const safeData = this.getSafeData(parsedData, CODE.OBJ_TYPE.BOOKLIST)
       this.updateBookList(safeData, CODE.OBJ_TYPE.BOOKLIST)
       RESULT = CODE.STATUS_TYPE.SUCCESS
