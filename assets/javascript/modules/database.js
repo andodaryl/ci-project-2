@@ -4,7 +4,7 @@ import CODE from './dictionary.js' // Public Dictionary
 // DEFAULT DATA
 const metaData = {
   currentYear: new Date().getFullYear(),
-  getUniqueLabel() {
+  getUniqueInteger() {
     return Date.now()
   },
   default: {
@@ -27,7 +27,7 @@ const Book = class {
     const BOOKFIELDS = Object.entries(metaData.default.book)
     BOOKFIELDS.forEach(BOOKFIELD => this[BOOKFIELD[0]] = BOOKFIELD[1])
     // Create new unique id
-    this[CODE.FIELD_TYPE.ID] = metaData.getUniqueLabel()
+    this[CODE.FIELD_TYPE.ID] = metaData.getUniqueInteger()
   }
 }
 
@@ -163,7 +163,7 @@ const databaseAPI = {
               // Get default bookfield values or create new id
               const FIELD_TYPE = BOOKFIELD[0]
               const FIELD_VALUE = FIELD_TYPE === CODE.FIELD_TYPE.ID
-              ? metaData.getUniqueLabel()
+              ? metaData.getUniqueInteger()
               : metaData.default.book[FIELD_TYPE]
               const defaultField = [FIELD_TYPE, FIELD_VALUE]
               // Use default values
