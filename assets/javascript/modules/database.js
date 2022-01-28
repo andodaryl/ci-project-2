@@ -180,6 +180,66 @@ const databaseAPI = {
     }
     return RESULT
   },
+  matchData(input1, input2, type) {
+    let RESULT // MATCH_TYPE or FAILURE
+    try {
+      const safeInput1 = this.getSafeData(input1, type)
+      const safeInput2 = this.getSafeData(input2, type)
+      switch(type) {
+        case CODE.OBJ_TYPE.BOOKFIELD:
+          const BOOKFIELD1 = safeInput1
+          const BOOKFIELD2 = safeInput2
+          BOOKFIELD1 === BOOKFIELD2
+          ? RESULT = CODE.MATCH_TYPE.EXACT
+          : RESULT = CODE.MATCH_TYPE.NONE
+          break;
+        case CODE.OBJ_TYPE.BOOK:
+          const bookData1 = Object.entries(safeInput1)
+          const bookData2 = Object.entries(safeInput2)
+          const isExactMatch = bookData1.every(BOOKFIELD1 => 
+            bookData2.every(
+              BOOKFIELD2 => this.matchData(BOOKFIELD1, BOOKFIELD2, CODE.OBJ_TYPE.BOOKFIELD)
+            )
+          )
+          const isPartialMatch = bookData1.some(BOOKFIELD1 => 
+            bookData2.some(
+              BOOKFIELD2 => this.matchData(BOOKFIELD1, BOOKFIELD2, CODE.OBJ_TYPE.BOOKFIELD)
+            )
+          )
+          RESULT = isExactMatch 
+          ? CODE.MATCH_TYPE.EXACT 
+          : isPartialMatch
+          ? CODE.MATCH_TYPE.SOME
+          : CODE.MATCH_TYPE.NONE
+          break;
+          case CODE.OBJ_TYPE.BOOKLIST:
+            const BOOKLIST1 = Object.entries(safeInput1)
+            const BOOKLIST2 = Object.entries(safeInput2)
+            const isExactMatch = BOOKLIST1.every(BOOK1 => 
+              BOOKLIST2.every(
+                BOOK2 => this.matchData(BOOK1, BOOK2, CODE.OBJ_TYPE.BOOKFIELD)
+              )
+            )
+            const isPartialMatch = BOOKLIST1.some(BOOK1 => 
+              BOOKLIST2.some(
+                BOOK2 => this.matchData(BOOK1, BOOK2, CODE.OBJ_TYPE.BOOKFIELD)
+              )
+            )
+            RESULT = isExactMatch 
+            ? CODE.MATCH_TYPE.EXACT 
+            : isPartialMatch
+            ? CODE.MATCH_TYPE.SOME
+            : CODE.MATCH_TYPE.NONE
+            break;
+        default:
+          throw 'Unknown type'
+      }
+    } catch (error) {
+      console.error('Could not compare data: ' + error)
+      RESULT = CODE.STATUS_TYPE.FAILURE
+    }
+    return RESULT
+  },
   updateBookList(input, type) {
     const oldBookList = [...data.bookList]
     // Push newBook or replace bookList with newBookList
