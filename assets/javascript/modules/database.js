@@ -208,16 +208,25 @@ const databaseAPI = {
     }
     return RESULT
   },
-  deleteBooks([...bookNumberList]) {
-    // Sanitize bookNumberList & record valid results only
-    const safeDeleteList = bookNumberList
-    .map(bookNumber => parseInt(bookNumber)).filter(validResult => validResult)
-    // Find books to be deleted
-    const booksDeleted = data.bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) > -1 )
-    // Create newBookList with deleted books removed
-    const newBookList = data.bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) < 0)
-    this.updateBookList(newBookList, CODE.OBJ_TYPE.BOOKLIST) // Update bookList
-    return booksDeleted
+  deleteBooks([...idList]) {
+    let RESULT // deletedBooks or STATUS_FAILURE
+    try {
+      // Use valid ids only
+      const safeDeleteList = idList
+      .filter(id => this.checkDataIntegrity(id, CODE.FIELD_TYPE.ID) === CODE.STATUS_TYPE.SUCCESS)
+      // Find books to be deleted: check if book id is in safeDeleteList
+      const deletedBooks = data.bookList
+      .filter(BOOK => safeDeleteList.indexOf(BOOK[CODE.FIELD_TYPE.ID]) > -1 )
+      // Create new BOOKLIST with deletedBooks removed
+      const BOOKLIST = data.bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) < 0)
+      // Update database
+      this.updateBookList(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
+      RESULT = deletedBooks
+    } catch (error) {
+      console.error('Could not delete books: ' + error)
+      RESULT = CODE.STATUS_TYPE.FAILURE
+    }
+    return RESULT
   },
   searchList({...searchTermsObject}) {
     const searchTermsArray = Object.entries(searchTermsObject)
