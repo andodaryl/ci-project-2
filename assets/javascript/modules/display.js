@@ -10,6 +10,28 @@ const config = {
 // ELEMENTS
 const display = document.querySelector('#display')
 const sampleBook = document.querySelector('[data-book-id="sampleBook"]')
+const addBookModalForm = document.querySelector('#addBookModal > form')
+const addBookBtn = document.querySelector('#addBookBtn')
+
+// EVENT LISTENERS
+addBookBtn.onclick = () => {
+  const id = CODE.FIELD_TYPE.ID
+  const title = CODE.FIELD_TYPE.TITLE
+  const authorList = CODE.FIELD_TYPE.AUTHORLIST
+  const subjectList = CODE.FIELD_TYPE.SUBJECTLIST
+  const totalPages = CODE.FIELD_TYPE.TOTALPAGES
+  const year = CODE.FIELD_TYPE.YEAR
+  const bookData = {
+    [id]: addBookModalForm.querySelector[`data-book-prop="${id}"`].value,
+    [title]: addBookModalForm.querySelector[`data-book-prop="${title}"`].value,
+    [authorList]: addBookModalForm.querySelector[`data-book-prop="${authorList}"`].value,
+    [subjectList]: addBookModalForm.querySelector[`data-book-prop="${subjectList}"`].value,
+    [totalPages]: addBookModalForm.querySelector[`data-book-prop="${totalPages}"`].value,
+    [year]: addBookModalForm.querySelector[`data-book-prop="${year}"`].value,
+  }
+  addBookData(bookData)
+  showBook(bookData.id)
+}
 
 // COMPONENTS
 const components = {
