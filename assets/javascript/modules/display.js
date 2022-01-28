@@ -213,6 +213,25 @@ const displayAPI = {
       RESULT = CODE.STATUS_TYPE.FAILURE
     }
     return RESULT
+  },
+  updateDisplay() {
+    let RESULT // STATUS_SUCCESS or FAILURE
+    try {
+      // Get id list of books displayed
+      const displayedBooksIdList = this.checkDisplay() // includes error check
+      // Find & sanitise ids of BookCards to display
+      const BOOKLIST = [config.BOOKLIST]
+      const safeBookList = databaseAPI.getSafeData(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
+      // Remove books on display
+      this.hideBook(...displayedBooksIdList)
+      // Display safe books from display book list
+      this.showBook(...safeBookList)
+      RESULT = CODE.STATUS_TYPE.SUCCESS
+    } catch (error) {
+      console.error('Could not retrieve books being displayed: ' + error)
+      RESULT = CODE.STATUS_TYPE.FAILURE
+    }
+    return RESULT
   }
 }
 
