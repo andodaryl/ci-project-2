@@ -106,7 +106,7 @@ const displayAPI = {
       // Get BOOKLIST excluding books with target ids
       const safeIdList = bookIdList.map(id => {
         const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
-        getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
+        databaseAPI.getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
       })
       const newBOOKLIST = config.bookList
       .filter(BOOK => !safeIdList.includes(BOOK[CODE.OBJ_TYPE.ID]))
@@ -121,7 +121,7 @@ const displayAPI = {
   updateBookData(...BOOKLIST) {
     let RESULT // STATUS_SUCCESS or FAILURE
     try {
-      const safeBOOKLIST = getSafeData(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
+      const safeBOOKLIST = databaseAPI.getSafeData(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
       // Clear BOOKLIST & push new books
       config.bookList.length = 0
       config.bookList.push(...safeBOOKLIST)
@@ -139,7 +139,7 @@ const displayAPI = {
       // Sanitize data
       const safeIdList = bookIdList.map(id => {
         const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
-        const safeField = getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
+        const safeField = databaseAPI.getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
         const safeId = safeField[0]
         return safeId
       })
@@ -166,7 +166,7 @@ const displayAPI = {
       // Sanitize data
       const safeIdList = bookIdList.map(id => {
         const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
-        const safeField = getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
+        const safeField = databaseAPI.getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
         const safeId = safeField[0]
         return safeId
       })
