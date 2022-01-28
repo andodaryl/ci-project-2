@@ -160,9 +160,11 @@ const databaseAPI = {
               // Use & trust given bookfield data
               updateSafeField(givenData)
             } else {
-              // Get default bookfield values
+              // Get default bookfield values or create new id
               const FIELD_TYPE = BOOKFIELD[0]
-              const FIELD_VALUE = metaData.default.book[FIELD_TYPE]
+              const FIELD_VALUE = FIELD_TYPE === CODE.FIELD_TYPE.ID
+              ? metaData.getUniqueLabel()
+              : metaData.default.book[FIELD_TYPE]
               const defaultField = [FIELD_TYPE, FIELD_VALUE]
               // Use default values
               updateSafeField(defaultField)
