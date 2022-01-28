@@ -2,13 +2,23 @@
 import databaseAPI from './database.js'
 import CODE from './dictionary.js' // Public Dictionary
 
+// CONFIG
+const config = {
+  bookList: []
+}
+
+// ELEMENTS
 const display = document.querySelector('#display')
 const sampleBook = document.querySelector('[data-book-id="sampleBook"]')
 
 // DISPLAY
 const displayAPI = {
-  toggleVisibility(element) {
-    element.classList.toggle('hidden')
+  toggleVisibility(element, visible = null) {
+    visible === true
+    ? element.classList.remove('hidden')
+    : visible === false
+    ? element.classList.add('hidden')
+    : element.classList.toggle('hidden')
   },  
   createCardBook(bookId) {
     // Exit early if invalid input
