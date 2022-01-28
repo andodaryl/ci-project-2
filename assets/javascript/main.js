@@ -7,8 +7,9 @@ import displayAPI from './modules/display.js'
 // addBookBtn
 const addBookBtn = document.querySelector('#addBookBtn')
 addBookBtn.onclick = () => {
-  const bookId = 1
-  const newBook = displayAPI.createCardBook(bookId)
+  const newBook = displayAPI.createBookCard({
+    title: 'Yes'
+  })
   newBook === CODE.STATUS_TYPE.FAILURE
   ? console.error('Book not created')
   : displayAPI.showBook(newBook)
