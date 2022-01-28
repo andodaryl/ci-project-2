@@ -37,151 +37,151 @@ const data = {
   bookList: [],
 }
 const databaseAPI = {
-    isObjectLiteral(input) {
-    return input.constructor === Book || input.constructor === Object ? true : false
-    },
-    checkDataIntegrity(input, type) {
-      let RESULT // STATUS_SUCCESS or FAILURE
-      try {
-        switch (type) {
-          case CODE.OBJ_TYPE.BOOKLIST:
-            const BOOKLIST = input
-            // Exit early if bookList is not an array
-            const validBookList = Array.isArray(BOOKLIST)
-            if (!validBookList) throw 'Given' + type + ' is not an array'
-            RESULT = CODE.STATUS_TYPE.SUCCESS
-            break;
-          case CODE.OBJ_TYPE.BOOK:
-            const BOOK = input
-            // Exit early if book is not object literal
-            const validBook = this.isObjectLiteral(BOOK)
-            if (!validBook) throw 'Given ' + type + ' is not an object literal'
-            // Check all book fields & exit if invalid field found
-            const validFields = Object.entries(BOOK)
-            .every(BOOKFIELD => this.checkDataIntegrity(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD))
-            if (!validFields) throw 'Given' + type + ' contains an invalid field'
-            RESULT = CODE.STATUS_TYPE.SUCCESS
-            break;
-          case CODE.OBJ_TYPE.BOOKFIELD:
-            const BOOKFIELD = input
-            const [FIELD_TYPE, FIELD_VALUE] = BOOKFIELD
-            switch(FIELD_TYPE) {
-              case CODE.FIELD_TYPE.TITLE:
-                // Exit early if not string
-                const validTitle = typeof FIELD_VALUE === 'string'
-                if (!validTitle) throw 'Given ' + key + ' is not a string'
-                RESULT = CODE.STATUS_TYPE.SUCCESS
-                break;
-              case CODE.FIELD_TYPE.TOTALPAGES:
-              case CODE.FIELD_TYPE.YEAR:
-              case CODE.FIELD_TYPE.ID:
-                // Exit early if not an integer
-                const validInteger = Number.isInteger(FIELD_VALUE)
-                if (!validInteger) throw 'Given ' + key + ' is not an integer'
-                RESULT = CODE.STATUS_TYPE.SUCCESS
-                break;
-              case CODE.FIELD_TYPE.AUTHORLIST:
-              case CODE.FIELD_TYPE.SUBJECTLIST:
-                // Exit early if not an array
-                const validArray = Array.isArray(FIELD_VALUE)
-                if (!validArray) throw 'Given ' + key + ' is not an array'
-                RESULT = CODE.STATUS_TYPE.SUCCESS
-                break;
-            }
-            break;
-          default:
-            throw 'Unknown type'
-        }
-      } catch (error) {
-        console.error('Could not check data integrity: ' + error)
-        RESULT = CODE.STATUS_TYPE.FAILURE
+  isObjectLiteral(input) {
+  return input.constructor === Book || input.constructor === Object ? true : false
+  },
+  checkDataIntegrity(input, type) {
+    let RESULT // STATUS_SUCCESS or FAILURE
+    try {
+      switch (type) {
+        case CODE.OBJ_TYPE.BOOKLIST:
+          const BOOKLIST = input
+          // Exit early if bookList is not an array
+          const validBookList = Array.isArray(BOOKLIST)
+          if (!validBookList) throw 'Given' + type + ' is not an array'
+          RESULT = CODE.STATUS_TYPE.SUCCESS
+          break;
+        case CODE.OBJ_TYPE.BOOK:
+          const BOOK = input
+          // Exit early if book is not object literal
+          const validBook = this.isObjectLiteral(BOOK)
+          if (!validBook) throw 'Given ' + type + ' is not an object literal'
+          // Check all book fields & exit if invalid field found
+          const validFields = Object.entries(BOOK)
+          .every(BOOKFIELD => this.checkDataIntegrity(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD))
+          if (!validFields) throw 'Given' + type + ' contains an invalid field'
+          RESULT = CODE.STATUS_TYPE.SUCCESS
+          break;
+        case CODE.OBJ_TYPE.BOOKFIELD:
+          const BOOKFIELD = input
+          const [FIELD_TYPE, FIELD_VALUE] = BOOKFIELD
+          switch(FIELD_TYPE) {
+            case CODE.FIELD_TYPE.TITLE:
+              // Exit early if not string
+              const validTitle = typeof FIELD_VALUE === 'string'
+              if (!validTitle) throw 'Given ' + key + ' is not a string'
+              RESULT = CODE.STATUS_TYPE.SUCCESS
+              break;
+            case CODE.FIELD_TYPE.TOTALPAGES:
+            case CODE.FIELD_TYPE.YEAR:
+            case CODE.FIELD_TYPE.ID:
+              // Exit early if not an integer
+              const validInteger = Number.isInteger(FIELD_VALUE)
+              if (!validInteger) throw 'Given ' + key + ' is not an integer'
+              RESULT = CODE.STATUS_TYPE.SUCCESS
+              break;
+            case CODE.FIELD_TYPE.AUTHORLIST:
+            case CODE.FIELD_TYPE.SUBJECTLIST:
+              // Exit early if not an array
+              const validArray = Array.isArray(FIELD_VALUE)
+              if (!validArray) throw 'Given ' + key + ' is not an array'
+              RESULT = CODE.STATUS_TYPE.SUCCESS
+              break;
+          }
+          break;
+        default:
+          throw 'Unknown type'
       }
-      return RESULT
-    },
-    getSafeData(input, type) {
-      let RESULT // BOOKLIST, BOOK, BOOKFIELD or STATUS_FAILURE
-      try {
-        switch(type) {
-          case CODE.OBJ_TYPE.BOOKLIST:
-            const BOOKLIST = input
-            const safeBookList = []
-            const updateSafeBookList = (bookListData) => {
-              safeBookList.push(...bookListData)
+    } catch (error) {
+      console.error('Could not check data integrity: ' + error)
+      RESULT = CODE.STATUS_TYPE.FAILURE
+    }
+    return RESULT
+  },
+  getSafeData(input, type) {
+    let RESULT // BOOKLIST, BOOK, BOOKFIELD or STATUS_FAILURE
+    try {
+      switch(type) {
+        case CODE.OBJ_TYPE.BOOKLIST:
+          const BOOKLIST = input
+          const safeBookList = []
+          const updateSafeBookList = (bookListData) => {
+            safeBookList.push(...bookListData)
+          }
+          // Find safe books in bookList else replace with default list
+          const checkBookListData = this.checkDataIntegrity(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
+          if (checkBookListData === CODE.STATUS_TYPE.SUCCESS) {
+            // Filter safe books
+            const safeBooksFound = BOOKLIST.filter(BOOK => {
+              const checkBookData = this.checkDataIntegrity(BOOK, CODE.OBJ_TYPE.BOOK)
+              return checkBookData === CODE.STATUS_TYPE.SUCCESS
+            })
+            // Use safe books            
+            updateSafeBookList(safeBooksFound)
+          } else {
+            // Use default values
+            updateSafeBookList(metaData.default.bookList)
+          }
+          RESULT = safeBookList
+          break;
+        case CODE.OBJ_TYPE.BOOK:
+          const BOOK = input
+          const safeBook = {}
+          const updateSafeBook = (bookData) => {
+            for (let index = 0; index < bookData.length; index++) {
+              const BOOKFIELD = bookData[index]
+              const [FIELD_TYPE, FIELD_VALUE] = BOOKFIELD
+              safeBook[FIELD_TYPE] = FIELD_VALUE            
             }
-            // Find safe books in bookList else replace with default list
-            const checkBookListData = this.checkDataIntegrity(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
-            if (checkBookListData === CODE.STATUS_TYPE.SUCCESS) {
-              // Filter safe books
-              const safeBooksFound = BOOKLIST.filter(BOOK => {
-                const checkBookData = this.checkDataIntegrity(BOOK, CODE.OBJ_TYPE.BOOK)
-                return checkBookData === CODE.STATUS_TYPE.SUCCESS
-              })
-              // Use safe books            
-              updateSafeBookList(safeBooksFound)
-            } else {
-              // Use default values
-              updateSafeBookList(metaData.default.bookList)
-            }
-            RESULT = safeBookList
-            break;
-          case CODE.OBJ_TYPE.BOOK:
-            const BOOK = input
-            const safeBook = {}
-            const updateSafeBook = (bookData) => {
-              for (let index = 0; index < bookData.length; index++) {
-                const BOOKFIELD = bookData[index]
-                const [FIELD_TYPE, FIELD_VALUE] = BOOKFIELD
-                safeBook[FIELD_TYPE] = FIELD_VALUE            
-              }
-            }
-            // Keep given book data if safe else replace invalid bookfields with default values
-            const checkBookData = this.checkDataIntegrity(BOOK, CODE.OBJ_TYPE.BOOK)
-            if (checkBookData === CODE.STATUS_TYPE.SUCCESS) {
-              const givenData = Object.entries(BOOK)
-              // Use & trust given book fields
-              updateSafeBook(givenData)
-            } else {
-              // Get safe book data else create new book with default values
-              const getSafeBookData = () => this.isObjectLiteral(givenData)
-              ? givenData.map(BOOKFIELD => this.getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD))
-              : new Book
-              // Use safe data
-              updateSafeBook(getSafeBookData())
-            }
-            RESULT = safeBook
-            break;
-          case CODE.OBJ_TYPE.BOOKFIELD:
-            const BOOKFIELD = input
-            const safeField = []
-            const updateSafeField = fieldData => safeField.push(...fieldData)
-            // Keep bookfield data if safe else replace with default values
-            const checkFieldData = this.checkDataIntegrity(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
-            if (checkFieldData === CODE.STATUS_TYPE.SUCCESS) {
-              const givenData = BOOKFIELD
-              // Use & trust given bookfield data
-              updateSafeField(givenData)
-            } else {
-              // Get default bookfield values or create new id
-              const FIELD_TYPE = BOOKFIELD[0]
-              const FIELD_VALUE = FIELD_TYPE === CODE.FIELD_TYPE.ID
-              ? metaData.getUniqueInteger()
-              : metaData.default.book[FIELD_TYPE]
-              const defaultField = [FIELD_TYPE, FIELD_VALUE]
-              // Use default values
-              updateSafeField(defaultField)
-            }
-            RESULT = safeField
-            break;
-          default:
-            throw 'Unknown type'
-        }
-      } catch (error) {
-        console.error('Could not retrieve safe data: ' + error)
-        RESULT = CODE.STATUS_TYPE.FAILURE
+          }
+          // Keep given book data if safe else replace invalid bookfields with default values
+          const checkBookData = this.checkDataIntegrity(BOOK, CODE.OBJ_TYPE.BOOK)
+          if (checkBookData === CODE.STATUS_TYPE.SUCCESS) {
+            const givenData = Object.entries(BOOK)
+            // Use & trust given book fields
+            updateSafeBook(givenData)
+          } else {
+            // Get safe book data else create new book with default values
+            const getSafeBookData = () => this.isObjectLiteral(givenData)
+            ? givenData.map(BOOKFIELD => this.getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD))
+            : new Book
+            // Use safe data
+            updateSafeBook(getSafeBookData())
+          }
+          RESULT = safeBook
+          break;
+        case CODE.OBJ_TYPE.BOOKFIELD:
+          const BOOKFIELD = input
+          const safeField = []
+          const updateSafeField = fieldData => safeField.push(...fieldData)
+          // Keep bookfield data if safe else replace with default values
+          const checkFieldData = this.checkDataIntegrity(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
+          if (checkFieldData === CODE.STATUS_TYPE.SUCCESS) {
+            const givenData = BOOKFIELD
+            // Use & trust given bookfield data
+            updateSafeField(givenData)
+          } else {
+            // Get default bookfield values or create new id
+            const FIELD_TYPE = BOOKFIELD[0]
+            const FIELD_VALUE = FIELD_TYPE === CODE.FIELD_TYPE.ID
+            ? metaData.getUniqueInteger()
+            : metaData.default.book[FIELD_TYPE]
+            const defaultField = [FIELD_TYPE, FIELD_VALUE]
+            // Use default values
+            updateSafeField(defaultField)
+          }
+          RESULT = safeField
+          break;
+        default:
+          throw 'Unknown type'
       }
-      return RESULT
-    },
-    updateBookList(input, type) {
+    } catch (error) {
+      console.error('Could not retrieve safe data: ' + error)
+      RESULT = CODE.STATUS_TYPE.FAILURE
+    }
+    return RESULT
+  },
+  updateBookList(input, type) {
     const oldBookList = [...data.bookList]
     // Push newBook or replace bookList with newBookList
     switch (type) {
