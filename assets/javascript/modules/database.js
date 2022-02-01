@@ -3,11 +3,27 @@ import CODE from './dictionary.js' // Public Dictionary
 
 // EXPORT
 export default dataAPI = (function() {
-  // DEFAULT DATA
+
+// HELPER FUNCTIONS
+const isObjectLiteral = input => 
+input.constructor === Book || input.constructor === Object ? true : false
+
+const getUniqueInteger = () => Date.now()
+
+// CLASSES
+class Book {
+  constructor({...bookData}) {
+    // Get safe book data
+    const BOOK = bookData
+    const safeBookData = getSafeData(BOOK, CODE.OBJ_TYPE.BOOK)
+    // Create instance properties from safe book data + new unique id
+    const BOOKFIELDS = Object.entries(safeBookData)
+    BOOKFIELDS.forEach(BOOKFIELD => this[BOOKFIELD[0]] = BOOKFIELD[1])
+  }
+}
+
+// DEFAULT DATA
 const metaData = {
-  getUniqueInteger() {
-    return Date.now()
-  },
   default: {
     bookList: [],
     book: {
@@ -21,27 +37,13 @@ const metaData = {
 }
 Object.freeze(metaData) // Prevent changes to metaData
 
-// CLASSES
-class Book {
-  constructor({...bookData}) {
-    // Get safe book data
-    const BOOK = bookData
-    const safeBookData = databaseAPI.getSafeData(BOOK, CODE.OBJ_TYPE.BOOK)
-    // Create instance properties from safe book data + new unique id
-    const BOOKFIELDS = Object.entries(safeBookData)
-    BOOKFIELDS.forEach(BOOKFIELD => this[BOOKFIELD[0]] = BOOKFIELD[1])
-  }
-}
-
 // DATABASE
 const data = {  
   bookList: [],
 }
-const databaseAPI = {
-  isObjectLiteral(input) {
-  return input.constructor === Book || input.constructor === Object ? true : false
-  },
-  checkDataIntegrity(input, type) {
+
+// DATA INTEGRITY SYSTEM
+const checkDataIntegrity = (input, type) => {
     let RESULT // STATUS_SUCCESS or FAILURE
     try {
       switch (type) {
@@ -55,11 +57,11 @@ const databaseAPI = {
         case CODE.OBJ_TYPE.BOOK:
           const BOOK = input
           // Exit early if book is not object literal
-          const validBook = this.isObjectLiteral(BOOK)
+          const validBook = isObjectLiteral(BOOK)
           if (!validBook) throw 'Given ' + type + ' is not an object literal'
           // Check all book fields & exit if invalid field found
           const validFields = Object.entries(BOOK)
-          .every(BOOKFIELD => this.checkDataIntegrity(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD))
+          .every(BOOKFIELD => checkDataIntegrity(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD))
           if (!validFields) throw 'Given' + type + ' contains an invalid field'
           RESULT = CODE.STATUS_TYPE.SUCCESS
           break;
@@ -98,8 +100,9 @@ const databaseAPI = {
       RESULT = CODE.STATUS_TYPE.FAILURE
     }
     return RESULT
-  },
-  getSafeData(input, type) {
+  }
+  
+ const getSafeData = (input, type) => {
     let RESULT // BOOKLIST, BOOK, BOOKFIELD or STATUS_FAILURE
     try {
       switch(type) {
@@ -110,11 +113,11 @@ const databaseAPI = {
             safeBookList.push(...bookListData)
           }
           // Find safe books in bookList else replace with default list
-          const checkBookListData = this.checkDataIntegrity(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
+          const checkBookListData = checkDataIntegrity(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
           if (checkBookListData === CODE.STATUS_TYPE.SUCCESS) {
             // Filter safe books
             const safeBooksFound = BOOKLIST.filter(BOOK => {
-              const checkBookData = this.checkDataIntegrity(BOOK, CODE.OBJ_TYPE.BOOK)
+              const checkBookData = checkDataIntegrity(BOOK, CODE.OBJ_TYPE.BOOK)
               return checkBookData === CODE.STATUS_TYPE.SUCCESS
             })
             // Use safe books            
@@ -136,15 +139,15 @@ const databaseAPI = {
             }
           }
           // Keep given book data if safe else replace invalid bookfields with default values
-          const checkBookData = this.checkDataIntegrity(BOOK, CODE.OBJ_TYPE.BOOK)
+          const checkBookData = checkDataIntegrity(BOOK, CODE.OBJ_TYPE.BOOK)
           if (checkBookData === CODE.STATUS_TYPE.SUCCESS) {
             const givenData = Object.entries(BOOK)
             // Use & trust given book fields
             updateSafeBook(givenData)
           } else {
             // Get safe book data else create new book with default values
-            const getSafeBookData = () => this.isObjectLiteral(givenData)
-            ? givenData.map(BOOKFIELD => this.getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD))
+            const getSafeBookData = () => isObjectLiteral(givenData)
+            ? givenData.map(BOOKFIELD => getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD))
             : new Book
             // Use safe data
             updateSafeBook(getSafeBookData())
@@ -156,7 +159,7 @@ const databaseAPI = {
           const safeField = []
           const updateSafeField = fieldData => safeField.push(...fieldData)
           // Keep bookfield data if safe else replace with default values
-          const checkFieldData = this.checkDataIntegrity(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
+          const checkFieldData = checkDataIntegrity(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
           if (checkFieldData === CODE.STATUS_TYPE.SUCCESS) {
             const givenData = BOOKFIELD
             // Use & trust given bookfield data
@@ -165,7 +168,7 @@ const databaseAPI = {
             // Get default bookfield values or create new id
             const FIELD_TYPE = BOOKFIELD[0]
             const FIELD_VALUE = FIELD_TYPE === CODE.FIELD_TYPE.ID
-            ? metaData.getUniqueInteger()
+            ? getUniqueInteger()
             : metaData.default.book[FIELD_TYPE]
             const defaultField = [FIELD_TYPE, FIELD_VALUE]
             // Use default values
@@ -181,12 +184,13 @@ const databaseAPI = {
       RESULT = CODE.STATUS_TYPE.FAILURE
     }
     return RESULT
-  },
-  matchData(input1, input2, type) {
+  }
+
+const matchData = (input1, input2, type) => {
     let RESULT // MATCH_TYPE or FAILURE
     try {
-      const safeInput1 = this.getSafeData(input1, type)
-      const safeInput2 = this.getSafeData(input2, type)
+      const safeInput1 = getSafeData(input1, type)
+      const safeInput2 = getSafeData(input2, type)
       let isExactMatch, isPartialMatch
       switch(type) {
         case CODE.OBJ_TYPE.BOOKFIELD:
@@ -201,12 +205,12 @@ const databaseAPI = {
           const bookData2 = Object.entries(safeInput2)
           isExactMatch = bookData1.every(BOOKFIELD1 => 
             bookData2.every(
-              BOOKFIELD2 => this.matchData(BOOKFIELD1, BOOKFIELD2, CODE.OBJ_TYPE.BOOKFIELD)
+              BOOKFIELD2 => matchData(BOOKFIELD1, BOOKFIELD2, CODE.OBJ_TYPE.BOOKFIELD)
             )
           )
           isPartialMatch = bookData1.some(BOOKFIELD1 => 
             bookData2.some(
-              BOOKFIELD2 => this.matchData(BOOKFIELD1, BOOKFIELD2, CODE.OBJ_TYPE.BOOKFIELD)
+              BOOKFIELD2 => matchData(BOOKFIELD1, BOOKFIELD2, CODE.OBJ_TYPE.BOOKFIELD)
             )
           )
           RESULT = isExactMatch 
@@ -220,12 +224,12 @@ const databaseAPI = {
             const BOOKLIST2 = Object.entries(safeInput2)
             isExactMatch = BOOKLIST1.every(BOOK1 => 
               BOOKLIST2.every(
-                BOOK2 => this.matchData(BOOK1, BOOK2, CODE.OBJ_TYPE.BOOKFIELD)
+                BOOK2 => matchData(BOOK1, BOOK2, CODE.OBJ_TYPE.BOOKFIELD)
               )
             )
             isPartialMatch = BOOKLIST1.some(BOOK1 => 
               BOOKLIST2.some(
-                BOOK2 => this.matchData(BOOK1, BOOK2, CODE.OBJ_TYPE.BOOKFIELD)
+                BOOK2 => matchData(BOOK1, BOOK2, CODE.OBJ_TYPE.BOOKFIELD)
               )
             )
             RESULT = isExactMatch 
@@ -242,8 +246,10 @@ const databaseAPI = {
       RESULT = CODE.STATUS_TYPE.FAILURE
     }
     return RESULT
-  },
-  updateBookList(input, type) {
+  }
+
+// DATA MANIPULATION SYSTEM
+const updateBookList = (input, type) => {
     const oldBookList = [...data.bookList]
     // Push newBook or replace bookList with newBookList
     switch (type) {
@@ -257,45 +263,48 @@ const databaseAPI = {
       console.error('Invalid type, could not update book list.')
     }
     return oldBookList
-  },
-  addBook({...bookData}) {
+  }
+  
+const addBook = ({...bookData}) => {
     let RESULT // BOOK or STATUS_FAILURE
     try {
       const BOOK = new Book(...bookData) // Contains data validation
-      this.updateBookList(BOOK, CODE.OBJ_TYPE.BOOK)
+      updateBookList(BOOK, CODE.OBJ_TYPE.BOOK)
       RESULT = BOOK
     } catch (error) {
       console.error('Could not add book to database: ' + error)
       RESULT = CODE.STATUS_TYPE.FAILURE
     }
     return RESULT
-  },
-  deleteBooks([...idList]) {
+  }
+
+const deleteBooks = ([...idList]) => {
     let RESULT // deletedBooks or STATUS_FAILURE
     try {
       // Use valid ids only
       const safeDeleteList = idList
-      .filter(id => this.checkDataIntegrity(id, CODE.FIELD_TYPE.ID) === CODE.STATUS_TYPE.SUCCESS)
+      .filter(id => checkDataIntegrity(id, CODE.FIELD_TYPE.ID) === CODE.STATUS_TYPE.SUCCESS)
       // Find books to be deleted: check if book id is in safeDeleteList
       const deletedBooks = data.bookList
       .filter(BOOK => safeDeleteList.indexOf(BOOK[CODE.FIELD_TYPE.ID]) > -1 )
       // Create new BOOKLIST with deletedBooks removed
       const BOOKLIST = data.bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) < 0)
       // Update database
-      this.updateBookList(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
+      updateBookList(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
       RESULT = deletedBooks
     } catch (error) {
       console.error('Could not delete books: ' + error)
       RESULT = CODE.STATUS_TYPE.FAILURE
     }
     return RESULT
-  },
-  searchList({...searchTermsObject}) {
+  }
+
+const searchList = ({...searchTermsObject}) => {
     let RESULT // searchResults or STATUS_FAILURE
     try {
       // Filters & refines BOOKLIST according to searchTerms
       const filteringLogic = (previousResults, currentSearchTerm) => {
-        const safeData = this.getSafeData(currentSearchTerm, CODE.OBJ_TYPE.BOOKFIELD)
+        const safeData = getSafeData(currentSearchTerm, CODE.OBJ_TYPE.BOOKFIELD)
         const [FIELD_TYPE, FIELD_VALUE] = safeData
         switch(FIELD_TYPE) {
           case CODE.FIELD_TYPE.TITLE:
@@ -321,7 +330,7 @@ const databaseAPI = {
         }
       }
       // Activate process
-      const safeBookList = this.getSafeData(data.bookList, CODE.OBJ_TYPE.BOOKLIST)
+      const safeBookList = getSafeData(data.bookList, CODE.OBJ_TYPE.BOOKLIST)
       const searchTermsArray = Object.entries(searchTermsObject)
       const searchResults = searchTermsArray.reduce(filteringLogic, safeBookList)
       RESULT = searchResults
@@ -330,12 +339,14 @@ const databaseAPI = {
       RESULT = CODE.STATUS_TYPE.FAILURE
     }
     return RESULT
-  },
-  saveToBrowser() {
+  }
+
+// BROWSER STORAGE SYSTEM
+const saveToBrowser = () => {
     let RESULT // STATUS_SUCCESS or FAILURE
     try {
       // Sanitize data for storage
-      const safeData = this.getSafeData(data.bookList, CODE.OBJ_TYPE.BOOKLIST)
+      const safeData = getSafeData(data.bookList, CODE.OBJ_TYPE.BOOKLIST)
       const safeDataString = JSON.stringify(safeData)
       // Attempt to save
       localStorage.setItem(CODE.OBJ_TYPE.BOOKLIST, safeDataString)
@@ -346,15 +357,16 @@ const databaseAPI = {
       RESULT = CODE.STATUS_TYPE.FAILURE
     }
     return RESULT
-  },
-  loadFromBrowser() {
+  }
+  
+const loadFromBrowser = () => {
     let RESULT // STATUS_SUCCESS or FAILURE
     try {
       // Check for stored data & sanitize, else use default if empty
       const dataFound = localStorage.getItem(CODE.DATASTORE_LABEL)
       const parsedData = dataFound ? JSON.parse(dataFound) : [...metaData.default.bookList]
-      const safeData = this.getSafeData(parsedData, CODE.OBJ_TYPE.BOOKLIST)
-      this.updateBookList(safeData, CODE.OBJ_TYPE.BOOKLIST)
+      const safeData = getSafeData(parsedData, CODE.OBJ_TYPE.BOOKLIST)
+      updateBookList(safeData, CODE.OBJ_TYPE.BOOKLIST)
       RESULT = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
       // Log error
@@ -362,9 +374,18 @@ const databaseAPI = {
       RESULT = CODE.STATUS_TYPE.FAILURE
     }
     return RESULT
-  },
-}
+  }
 
-// API
-return databaseAPI
+// dataAPI
+return {
+  checkDataIntegrity,
+  getSafeData,
+  matchData,
+  updateBookList,
+  addBook,
+  deleteBooks,
+  searchList,
+  saveToBrowser,
+  loadFromBrowser,
+}
 })()
