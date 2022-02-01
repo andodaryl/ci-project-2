@@ -364,4 +364,4 @@ const databaseAPI = {
 }
 
 // EXPORT
-export default databaseAPI
+export default dataAPI

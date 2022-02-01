@@ -1,5 +1,5 @@
 // IMPORTS
-import databaseAPI from './database.js'
+import dataAPI from './database.js'
 import CODE from './dictionary.js' // Public Dictionary
 
 // CONFIG
