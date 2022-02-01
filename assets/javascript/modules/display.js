@@ -2,7 +2,8 @@
 import dataAPI from './database.js'
 import CODE from './dictionary.js' // Public Dictionary
 
-// CONFIG
+export default displayAPI = (function() {
+  // CONFIG
 const config = {
   bookList: []
 }
@@ -226,5 +227,5 @@ const displayAPI = {
     return RESULT
   }
 }
-
-export default displayAPI
+}
+)()

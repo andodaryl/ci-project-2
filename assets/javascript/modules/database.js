@@ -1,7 +1,9 @@
 // IMPORTS
 import CODE from './dictionary.js' // Public Dictionary
 
-// DEFAULT DATA
+// EXPORT
+export default dataAPI = (function() {
+  // DEFAULT DATA
 const metaData = {
   getUniqueInteger() {
     return Date.now()
@@ -363,5 +365,6 @@ const databaseAPI = {
   },
 }
 
-// EXPORT
-export default dataAPI
+// API
+return databaseAPI
+})()
