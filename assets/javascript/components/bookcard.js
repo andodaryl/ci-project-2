@@ -1,8 +1,13 @@
-//IMPORT
-import displayAPI from '../modules/display'
+// IMPORT
+import CODE from '../modules/dictionary.js'
+import displayAPI from '../modules/display.js'
 
-export default BookCard = (function({...bookData}) {
-   let RESULT // BookCard or STATUS_FAILURE
+// EXPORT book card generator
+export default createBookCard = ({...bookData}) => {
+   const RESULT = {
+     STATUS: CODE.STATUS_TYPE.WAIT,
+     CONTENTS: null // BookCard
+   }
    try {   
      const BOOK = bookData
      const safeBook = databaseAPI.getSafeData(BOOK, CODE.OBJ_TYPE.BOOK)
@@ -27,31 +32,14 @@ export default BookCard = (function({...bookData}) {
      deleteBtn.onclick = () => displayAPI.hideBook(bookId)
      // Edit Button
      editBtn.onclick = () => console.log('Edit modal activated')
+    //  Update RESULT
+    RESULT.CONTENTS = clone
+    RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
    } catch (error) {
-     console.error('Could not create BookCard component: ' + error)
-     RESULT = CODE.STATUS_TYPE.FAILURE
+     if (CODE.DEBUG_MODE) console.error('Could not create BookCard component: ' + error)
+    //  Update RESULT
+     RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+   } finally {
+     return RESULT
    }
-
-   const createBookCard = ({...bookData}) => {
-    let RESULT // newBookCard or STATUS_FAILURE
-    try {
-      const BOOK = bookData
-      const safeBook = databaseAPI.getSafeData(BOOK, CODE.OBJ_TYPE.BOOK)
-      const bookExists = config.bookList
-      .some(BOOK => BOOK[CODE.FIELD_TYPE.ID] === safeBook[CODE.FIELD_TYPE.ID])
-      // Exit early if book does not exist in display bookList
-      if (!bookExists) throw 'Book with id[' + safeBook[CODE.FIELD_TYPE.ID] + '] does not exist'
-      // Create BookCard
-      const newBookCard = components.BookCard(safeBook)
-      RESULT = newBookCard
-    } catch (error) {
-      console.error('Could not create book card: ' + error)
-      RESULT =  CODE.STATUS_TYPE.FAILURE
-    }
-    return RESULT
-  }
-
-   return {
-     RESULT
-   }
- })()
+ }
