@@ -40,43 +40,43 @@
 <div id="page-content">
   <!-- app container -->
   <div class="container-md p-5">
-          <!-- sample book -->
-          <div class="card card-book overflow-hidden d-none" aria-hidden="true" data-book-id="sampleBook">
-            <form class="row g-2">
-              <!-- title -->
-              <div class="col-md-12 form-floating">
-                  <input type="text" class="form-control" data-book-prop="title" name="fname" placeholder="Enter your book title" value="This is an example to showcase readonly functionality" required readonly/>
-                  <label for="fname">Title</label>
-              </div>
-              <!-- authors -->
-              <div class="col-12 form-floating">
-                  <input type="text" class="form-control" data-book-prop="authorList" name="authorList" placeholder="Emma Smith, John Crouer" value="This is an example to showcase readonly functionality" required readonly/>
-                  <label for="authorList">Author(s)</label>
-              </div>
-              <!-- subjects -->
-              <div class="col-12 form-floating">
-                  <input type="text" class="form-control" data-book-prop="subjectList" name="subjectList" placeholder="Fiction, History, Manga" value="This is an example to showcase readonly functionality" required readonly/>
-                  <label for="subjectList">Subject(s)</label>
-              </div>
-              <!-- year -->
-              <div class="col-6 form-floating">
-                  <input type="number" class="form-control" data-book-prop="year" name="year" placeholder="2022" value="2022" required readonly/>
-                  <label for="subjectList">Year</label>
-              </div>
-              <!-- pages -->
-              <div class="col-6 form-floating">
-                  <input type="number" class="form-control" data-book-prop="pages" name="pages" placeholder="0" min="1" value="0" required readonly/>
-                  <label for="subjectList">Pages</label>
-              </div>
-              <!-- action buttons -->
-              <div class="action-btn-container col-12 d-flex justify-content-evenly">
-                <!-- delete book -->
-                <button type="button" data-action-type="delete" class="btn btn-danger text-capitalize">delete</button>
-                <!-- change book details -->
-                <button type="button" data-action-type="edit" class="btn btn-success text-capitalize">edit</button>
-            </div>
-            </form>
-          </div>
+    <!-- sample book -->
+    <div class="card card-book overflow-hidden d-none" aria-hidden="true" data-book-id="sampleBook">
+      <form class="row g-2">
+        <!-- title -->
+        <div class="col-md-12 form-floating">
+            <input type="text" class="form-control" data-book-prop="title" name="fname" placeholder="Enter your book title" value="This is an example to showcase readonly functionality" required readonly/>
+            <label for="fname">Title</label>
+        </div>
+        <!-- authors -->
+        <div class="col-12 form-floating">
+            <input type="text" class="form-control" data-book-prop="authorList" name="authorList" placeholder="Emma Smith, John Crouer" value="This is an example to showcase readonly functionality" required readonly/>
+            <label for="authorList">Author(s)</label>
+        </div>
+        <!-- subjects -->
+        <div class="col-12 form-floating">
+            <input type="text" class="form-control" data-book-prop="subjectList" name="subjectList" placeholder="Fiction, History, Manga" value="This is an example to showcase readonly functionality" required readonly/>
+            <label for="subjectList">Subject(s)</label>
+        </div>
+        <!-- year -->
+        <div class="col-6 form-floating">
+            <input type="number" class="form-control" data-book-prop="year" name="year" placeholder="2022" value="2022" required readonly/>
+            <label for="subjectList">Year</label>
+        </div>
+        <!-- pages -->
+        <div class="col-6 form-floating">
+            <input type="number" class="form-control" data-book-prop="pages" name="pages" placeholder="0" min="1" value="0" required readonly/>
+            <label for="subjectList">Pages</label>
+        </div>
+        <!-- action buttons -->
+        <div class="action-btn-container col-12 d-flex justify-content-evenly">
+          <!-- delete book -->
+          <button type="button" data-action-type="delete" class="btn btn-danger text-capitalize">delete</button>
+          <!-- change book details -->
+          <button type="button" data-action-type="edit" class="btn btn-success text-capitalize">edit</button>
+      </div>
+      </form>
+    </div>
     <!-- empty list message -->
     <p class="h2 text-center pb-5">Let's get started. Add a book!</p>
     <!-- modal add book -->
