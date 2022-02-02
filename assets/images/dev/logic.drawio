@@ -1,12 +1,9 @@
 <mxfile host="65bd71144e">
-    <diagram id="UJdVG02fsfTL8Iua6NV-" name="MAIN">
-        <mxGraphModel dx="2043" dy="-1141" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="2339" pageHeight="3300" math="0" shadow="0">
+    <diagram id="UJdVG02fsfTL8Iua6NV-" name="Code Logic">
+        <mxGraphModel dx="2137" dy="-1090" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="2339" pageHeight="3300" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="2" value="BOOKS" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-760" y="1924" width="140" height="70" as="geometry"/>
-                </mxCell>
                 <mxCell id="20" style="edgeStyle=none;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="4" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="-770" y="1790" as="targetPoint"/>
@@ -41,7 +38,7 @@
                 <mxCell id="22" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="7" target="4" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="23" style="edgeStyle=none;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="7" target="8">
+                <mxCell id="23" style="edgeStyle=none;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="7" target="8" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="7" value="components" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -50,20 +47,37 @@
                 <mxCell id="8" value="main" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="-1090" y="1756" width="140" height="70" as="geometry"/>
                 </mxCell>
-                <mxCell id="24" value="BOOK_LIST" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="30" value="&lt;h1&gt;Logic&amp;nbsp;&lt;/h1&gt;&lt;p&gt;APIs constitute much of the code logic.&lt;br&gt;dataAPI and displayAPI refer to the same dictionary and expose functions to be used by components.&lt;br&gt;&lt;br&gt;dataAPI is data focused, for integrity checking and manipulation/storage of data.&lt;/p&gt;&lt;p&gt;displayAPI is UI focused, making changes to the DOM.&lt;/p&gt;&lt;p&gt;Components interact with the two APIs for data- and UI-centric behaviour.&lt;/p&gt;&lt;p&gt;The main javascript file connects component logic to relevant DOM elements.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="-380" y="1610" width="250" height="290" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="YC7LaE1zEYJNJpSbOzna" name="Components">
+        <mxGraphModel dx="3182" dy="459" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2339" pageHeight="3300" math="0" shadow="0">
+            <root>
+                <mxCell id="8BrLg2O4_jqGTOIfEkQE-0"/>
+                <mxCell id="8BrLg2O4_jqGTOIfEkQE-1" parent="8BrLg2O4_jqGTOIfEkQE-0"/>
+                <mxCell id="8BrLg2O4_jqGTOIfEkQE-2" value="BOOKS" style="whiteSpace=wrap;html=1;" vertex="1" parent="8BrLg2O4_jqGTOIfEkQE-1">
+                    <mxGeometry x="-760" y="1924" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="8BrLg2O4_jqGTOIfEkQE-3" value="BOOK_LIST" style="whiteSpace=wrap;html=1;" vertex="1" parent="8BrLg2O4_jqGTOIfEkQE-1">
                     <mxGeometry x="-910" y="1924" width="140" height="70" as="geometry"/>
                 </mxCell>
-                <mxCell id="25" value="NAV_BAR" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="8BrLg2O4_jqGTOIfEkQE-4" value="NAV_BAR" style="whiteSpace=wrap;html=1;" vertex="1" parent="8BrLg2O4_jqGTOIfEkQE-1">
                     <mxGeometry x="-910" y="2098" width="140" height="70" as="geometry"/>
                 </mxCell>
-                <mxCell id="26" value="BOOK_MODAL" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="8BrLg2O4_jqGTOIfEkQE-5" value="BOOK_MODAL" style="whiteSpace=wrap;html=1;" vertex="1" parent="8BrLg2O4_jqGTOIfEkQE-1">
                     <mxGeometry x="-910" y="2010" width="140" height="70" as="geometry"/>
                 </mxCell>
-                <mxCell id="27" value="ADD_BOOK" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="8BrLg2O4_jqGTOIfEkQE-6" value="ADD_BOOK" style="whiteSpace=wrap;html=1;" vertex="1" parent="8BrLg2O4_jqGTOIfEkQE-1">
                     <mxGeometry x="-760" y="2010" width="140" height="70" as="geometry"/>
                 </mxCell>
-                <mxCell id="28" value="EDIT_BOOK" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="8BrLg2O4_jqGTOIfEkQE-7" value="EDIT_BOOK" style="whiteSpace=wrap;html=1;" vertex="1" parent="8BrLg2O4_jqGTOIfEkQE-1">
                     <mxGeometry x="-610" y="2010" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="JgDuqfCxkIpn-Z59YIoz-0" value="&lt;h1&gt;Components&amp;nbsp;&lt;/h1&gt;&lt;p&gt;...&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="8BrLg2O4_jqGTOIfEkQE-1">
+                    <mxGeometry x="-400" y="1910" width="250" height="290" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
