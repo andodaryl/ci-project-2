@@ -22,8 +22,9 @@ class Book {
   }
 }
 
-// DEFAULT DATA
-const metaData = {
+// DATABASE
+const data = {  
+  bookList: [],
   default: {
     bookList: [],
     book: {
@@ -35,12 +36,10 @@ const metaData = {
     }
   }
 }
-Object.freeze(metaData) // Prevent changes to metaData
 
-// DATABASE
-const data = {  
-  bookList: [],
-}
+// Prevent direct properties of these objects from being altered
+Object.freeze(data) // data object
+Object.freeze(data.default) // default object
 
 // DATA INTEGRITY SYSTEM
 const checkDataIntegrity = (input, type) => {
