@@ -65,7 +65,7 @@
                     <mxGeometry x="-910" y="1924" width="140" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="8BrLg2O4_jqGTOIfEkQE-4" value="NAV_BAR" style="whiteSpace=wrap;html=1;" vertex="1" parent="8BrLg2O4_jqGTOIfEkQE-1">
-                    <mxGeometry x="-910" y="2098" width="140" height="70" as="geometry"/>
+                    <mxGeometry x="-910" y="1840" width="140" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="8BrLg2O4_jqGTOIfEkQE-5" value="BOOK_MODAL" style="whiteSpace=wrap;html=1;" vertex="1" parent="8BrLg2O4_jqGTOIfEkQE-1">
                     <mxGeometry x="-910" y="2010" width="140" height="70" as="geometry"/>
@@ -78,6 +78,9 @@
                 </mxCell>
                 <mxCell id="JgDuqfCxkIpn-Z59YIoz-0" value="&lt;h1&gt;Components&amp;nbsp;&lt;/h1&gt;&lt;p&gt;...&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="8BrLg2O4_jqGTOIfEkQE-1">
                     <mxGeometry x="-400" y="1910" width="250" height="290" as="geometry"/>
+                </mxCell>
+                <mxCell id="JgDuqfCxkIpn-Z59YIoz-1" value="EMPTY_NOTIF" style="whiteSpace=wrap;html=1;" vertex="1" parent="8BrLg2O4_jqGTOIfEkQE-1">
+                    <mxGeometry x="-610" y="1924" width="140" height="70" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
