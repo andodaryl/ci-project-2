@@ -11,8 +11,8 @@
 }
 
 /* CONTAINERS */
-/* display */
-#display {
+/* book-list */
+#book-list {
   gap: 1rem;
 }
 /* form-floating */
@@ -40,12 +40,12 @@
 .card-book .action-btn-container .btn {
   width: 7rem;
 }
-/* showModalCard*/
-#showModalCard {
+/* add-book-card*/
+.card-modal-activate-add {
   height: var(--card-height);
   width: var(--card-width);
 }
-#showModalCard #showModalBtn {
+.btn-modal-activate[data-modal-action="add"] {
   width: 100%;
   height: 100%;
 }

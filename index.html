@@ -38,9 +38,9 @@
     </div>
 </header>
 <div id="page-content">
-  <!-- app container -->
+  <!-- display container -->
   <div class="container-md p-5">
-    <!-- sample book -->
+    <!-- sample book card -->
     <div class="card card-book overflow-hidden d-none" aria-hidden="true" data-book-id="sampleBook">
       <form class="row g-2">
         <!-- title -->
@@ -77,14 +77,12 @@
       </div>
       </form>
     </div>
-    <!-- empty list message -->
-    <p class="h2 text-center pb-5">Let's get started. Add a book!</p>
-    <!-- modal add book -->
+    <!-- book modal: edit/add book -->
     <div class="modal fade" id="bookModal" tabindex="-1" role="dialog" aria-labelledby="bookModalTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title text-capitalize" id="exampleModalLongTitle">Book Details</h5>
+            <h5 class="modal-title text-capitalize" id="bookModalTitle">Book Details</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
             </button>
           </div>
@@ -124,11 +122,13 @@
         </div>
       </div>
     </div>
-    <!-- display container -->
-    <div id="display" class="d-flex flex-wrap">
-      <!-- show modal btn -->
-      <div id="showModalCard" class="d-flex justify-content-center card">
-        <button id="showModalBtn" class="btn" data-bs-toggle="modal" data-bs-target="#bookModal">
+    <!-- empty book list notification -->
+    <p class="h2 text-center pb-5">Let's get started. Add a book!</p>
+    <!-- book list container -->
+    <div id="book-list" class="d-flex flex-wrap">
+      <!-- activate modal: add book -->
+      <div class="d-flex justify-content-center card card-modal-activate-add">
+        <button class="btn btn-modal-activate" data-modal-action="add" data-bs-toggle="modal" data-bs-target="#bookModal">
           <p class="fs-2">
             Create New
             <i class="bi bi-plus-lg"></i>
