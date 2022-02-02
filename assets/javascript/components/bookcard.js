@@ -31,6 +31,26 @@ export default BookCard = (function({...bookData}) {
      console.error('Could not create BookCard component: ' + error)
      RESULT = CODE.STATUS_TYPE.FAILURE
    }
+
+   const createBookCard = ({...bookData}) => {
+    let RESULT // newBookCard or STATUS_FAILURE
+    try {
+      const BOOK = bookData
+      const safeBook = databaseAPI.getSafeData(BOOK, CODE.OBJ_TYPE.BOOK)
+      const bookExists = config.bookList
+      .some(BOOK => BOOK[CODE.FIELD_TYPE.ID] === safeBook[CODE.FIELD_TYPE.ID])
+      // Exit early if book does not exist in display bookList
+      if (!bookExists) throw 'Book with id[' + safeBook[CODE.FIELD_TYPE.ID] + '] does not exist'
+      // Create BookCard
+      const newBookCard = components.BookCard(safeBook)
+      RESULT = newBookCard
+    } catch (error) {
+      console.error('Could not create book card: ' + error)
+      RESULT =  CODE.STATUS_TYPE.FAILURE
+    }
+    return RESULT
+  }
+
    return {
      RESULT
    }
