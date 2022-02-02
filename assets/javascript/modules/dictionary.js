@@ -1,14 +1,16 @@
 export default CODE = (function() {
    // PUBLIC DICTIONARY
    return {
+    DEBUG_MODE: true,
     STATUS_TYPE: {
       SUCCESS: 'SUCCESS',
       FAILURE: 'FAILURE',
+      WAIT: 'WAIT'
     },
     OBJ_TYPE: {
       BOOK: 'BOOK',
-      BOOKLIST: 'BOOKLIST',
-      BOOKFIELD: 'BOOKFIELD'
+      BOOK_LIST: 'BOOKLIST',
+      BOOK_FIELD: 'BOOKFIELD'
     },
     MATCH_TYPE: {
       NONE: 'NONE',
@@ -18,10 +20,10 @@ export default CODE = (function() {
     FIELD_TYPE: {
       ID: 'id',
       TITLE: 'title',
-      TOTALPAGES: 'totalPages',
+      TOTAL_PAGES: 'totalPages',
       YEAR: 'year',
-      AUTHORLIST: 'authorList',
-      SUBJECTLIST: 'subjectList'
+      AUTHOR_LIST: 'authorList',
+      SUBJECT_LIST: 'subjectList'
     }
   }
 }
