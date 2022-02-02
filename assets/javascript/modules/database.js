@@ -376,6 +376,41 @@ const loadFromBrowser = () => {
     return RESULT
   }
 
+// SESSION STORAGE SYSTEM
+const saveToSesssion = () => {
+    let RESULT // STATUS_SUCCESS or FAILURE
+    try {
+      // Sanitize data for storage
+      const safeData = getSafeData(data.bookList, CODE.OBJ_TYPE.BOOKLIST)
+      const safeDataString = JSON.stringify(safeData)
+      // Attempt to save
+      sessionStorage.setItem(CODE.OBJ_TYPE.BOOKLIST, safeDataString)
+      RESULT = CODE.STATUS_TYPE.SUCCESS
+    } catch (error) {
+      // Log error
+      console.error('Save to session storage failed: ' + error)
+      RESULT = CODE.STATUS_TYPE.FAILURE
+    }
+    return RESULT
+  }
+  
+const loadFromSesssion = () => {
+    let RESULT // STATUS_SUCCESS or FAILURE
+    try {
+      // Check for stored data & sanitize, else use default if empty
+      const dataFound = sessionStorage.getItem(CODE.DATASTORE_LABEL)
+      const parsedData = dataFound ? JSON.parse(dataFound) : [...metaData.default.bookList]
+      const safeData = getSafeData(parsedData, CODE.OBJ_TYPE.BOOKLIST)
+      updateBookList(safeData, CODE.OBJ_TYPE.BOOKLIST)
+      RESULT = CODE.STATUS_TYPE.SUCCESS
+    } catch (error) {
+      // Log error
+      error => console.error('Load from session storage failed: ' + error)
+      RESULT = CODE.STATUS_TYPE.FAILURE
+    }
+    return RESULT
+  }
+
 // dataAPI
 return {
   checkDataIntegrity,
@@ -387,5 +422,7 @@ return {
   searchList,
   saveToBrowser,
   loadFromBrowser,
+  saveToSesssion, 
+  loadFromSesssion,
 }
 })()
