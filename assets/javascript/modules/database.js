@@ -43,15 +43,20 @@ Object.freeze(data.default) // default object
 
 // DATA INTEGRITY SYSTEM
 const checkDataIntegrity = (input, type) => {
-    let RESULT // STATUS_SUCCESS or FAILURE
+  const RESULT = { 
+    STATUS: CODE.STATUS_TYPE.WAIT,
+    CONTENTS: null
+  }
     try {
       switch (type) {
         case CODE.OBJ_TYPE.BOOKLIST:
           const BOOKLIST = input
-          // Exit early if bookList is not an array
+          // Exit early if book list is not an array
           const validBookList = Array.isArray(BOOKLIST)
           if (!validBookList) throw 'Given' + type + ' is not an array'
-          RESULT = CODE.STATUS_TYPE.SUCCESS
+          // Update RESULT
+          RESULT.CONTENTS = true
+          RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
           break;
         case CODE.OBJ_TYPE.BOOK:
           const BOOK = input
@@ -62,7 +67,9 @@ const checkDataIntegrity = (input, type) => {
           const validFields = Object.entries(BOOK)
           .every(BOOKFIELD => checkDataIntegrity(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD))
           if (!validFields) throw 'Given' + type + ' contains an invalid field'
-          RESULT = CODE.STATUS_TYPE.SUCCESS
+          // Update RESULT
+          RESULT.CONTENTS = true
+          RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
           break;
         case CODE.OBJ_TYPE.BOOKFIELD:
           const BOOKFIELD = input
@@ -72,7 +79,9 @@ const checkDataIntegrity = (input, type) => {
               // Exit early if not string
               const validTitle = typeof FIELD_VALUE === 'string'
               if (!validTitle) throw 'Given ' + key + ' is not a string'
-              RESULT = CODE.STATUS_TYPE.SUCCESS
+              // Update RESULT
+              RESULT.CONTENTS = true
+              RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
               break;
             case CODE.FIELD_TYPE.TOTALPAGES:
             case CODE.FIELD_TYPE.YEAR:
@@ -80,29 +89,38 @@ const checkDataIntegrity = (input, type) => {
               // Exit early if not an integer
               const validInteger = Number.isInteger(FIELD_VALUE)
               if (!validInteger) throw 'Given ' + key + ' is not an integer'
-              RESULT = CODE.STATUS_TYPE.SUCCESS
+              // Update RESULT
+              RESULT.CONTENTS = true
+              RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
               break;
             case CODE.FIELD_TYPE.AUTHORLIST:
             case CODE.FIELD_TYPE.SUBJECTLIST:
               // Exit early if not an array
               const validArray = Array.isArray(FIELD_VALUE)
               if (!validArray) throw 'Given ' + key + ' is not an array'
-              RESULT = CODE.STATUS_TYPE.SUCCESS
+              // Update RESULT
+              RESULT.CONTENTS = true
+              RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
               break;
           }
           break;
         default:
-          throw 'Unknown type'
+          throw 'Invalid type'
       }
     } catch (error) {
-      console.error('Could not check data integrity: ' + error)
-      RESULT = CODE.STATUS_TYPE.FAILURE
+      if (CODE.DEBUG_MODE) console.error('Could not check data integrity: ' + error)
+      // Update RESULT
+      RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+    } finally {
+      return RESULT
     }
-    return RESULT
   }
   
  const getSafeData = (input, type) => {
-    let RESULT // BOOKLIST, BOOK, BOOKFIELD or STATUS_FAILURE
+  const RESULT = { 
+    STATUS: CODE.STATUS_TYPE.WAIT,
+    CONTENTS: null // BOOKLIST, BOOK, BOOKFIELD
+  }
     try {
       switch(type) {
         case CODE.OBJ_TYPE.BOOKLIST:
@@ -125,7 +143,9 @@ const checkDataIntegrity = (input, type) => {
             // Use default values
             updateSafeBookList(metaData.default.bookList)
           }
-          RESULT = safeBookList
+          // Update RESULT
+          RESULT.CONTENTS = safeBookList
+          RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
           break;
         case CODE.OBJ_TYPE.BOOK:
           const BOOK = input
@@ -151,7 +171,9 @@ const checkDataIntegrity = (input, type) => {
             // Use safe data
             updateSafeBook(getSafeBookData())
           }
-          RESULT = safeBook
+          // Update RESULT
+          RESULT.CONTENTS = safeBook
+          RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
           break;
         case CODE.OBJ_TYPE.BOOKFIELD:
           const BOOKFIELD = input
@@ -173,20 +195,27 @@ const checkDataIntegrity = (input, type) => {
             // Use default values
             updateSafeField(defaultField)
           }
-          RESULT = safeField
+          // Update RESULT
+          RESULT.CONTENTS = safeField
+          RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
           break;
         default:
-          throw 'Unknown type'
+          throw 'Invalid type'
       }
     } catch (error) {
-      console.error('Could not retrieve safe data: ' + error)
-      RESULT = CODE.STATUS_TYPE.FAILURE
+      if (CODE.DEBUG_MODE) console.error('Could not retrieve safe data: ' + error)
+      // Update RESULT
+      RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+    } finally {
+      return RESULT
     }
-    return RESULT
   }
 
 const matchData = (input1, input2, type) => {
-    let RESULT // MATCH_TYPE or FAILURE
+    const RESULT = { 
+      STATUS: CODE.STATUS_TYPE.WAIT,
+      CONTENTS: null // MATCH_TYPE
+    }
     try {
       const safeInput1 = getSafeData(input1, type)
       const safeInput2 = getSafeData(input2, type)
@@ -195,9 +224,10 @@ const matchData = (input1, input2, type) => {
         case CODE.OBJ_TYPE.BOOKFIELD:
           const BOOKFIELD1 = safeInput1
           const BOOKFIELD2 = safeInput2
-          BOOKFIELD1 === BOOKFIELD2
-          ? RESULT = CODE.MATCH_TYPE.EXACT
-          : RESULT = CODE.MATCH_TYPE.NONE
+          // Update RESULT
+          if (BOOKFIELD1 === BOOKFIELD2) RESULT.CONTENTS = CODE.MATCH_TYPE.EXACT
+          if (BOOKFIELD1 !== BOOKFIELD2) RESULT.CONTENTS = CODE.MATCH_TYPE.NONE
+          RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
           break;
         case CODE.OBJ_TYPE.BOOK:
           const bookData1 = Object.entries(safeInput1)
@@ -205,18 +235,15 @@ const matchData = (input1, input2, type) => {
           isExactMatch = bookData1.every(BOOKFIELD1 => 
             bookData2.every(
               BOOKFIELD2 => matchData(BOOKFIELD1, BOOKFIELD2, CODE.OBJ_TYPE.BOOKFIELD)
-            )
-          )
+          ))
           isPartialMatch = bookData1.some(BOOKFIELD1 => 
             bookData2.some(
               BOOKFIELD2 => matchData(BOOKFIELD1, BOOKFIELD2, CODE.OBJ_TYPE.BOOKFIELD)
-            )
-          )
-          RESULT = isExactMatch 
-          ? CODE.MATCH_TYPE.EXACT 
-          : isPartialMatch
-          ? CODE.MATCH_TYPE.SOME
-          : CODE.MATCH_TYPE.NONE
+          ))
+          // Update RESULT
+          RESULT.CONTENTS = isExactMatch ? CODE.MATCH_TYPE.EXACT : 
+          isPartialMatch ? CODE.MATCH_TYPE.SOME : CODE.MATCH_TYPE.NONE
+          RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
           break;
           case CODE.OBJ_TYPE.BOOKLIST:
             const BOOKLIST1 = Object.entries(safeInput1)
@@ -224,61 +251,84 @@ const matchData = (input1, input2, type) => {
             isExactMatch = BOOKLIST1.every(BOOK1 => 
               BOOKLIST2.every(
                 BOOK2 => matchData(BOOK1, BOOK2, CODE.OBJ_TYPE.BOOKFIELD)
-              )
-            )
+              ))
             isPartialMatch = BOOKLIST1.some(BOOK1 => 
               BOOKLIST2.some(
                 BOOK2 => matchData(BOOK1, BOOK2, CODE.OBJ_TYPE.BOOKFIELD)
-              )
-            )
-            RESULT = isExactMatch 
-            ? CODE.MATCH_TYPE.EXACT 
-            : isPartialMatch
-            ? CODE.MATCH_TYPE.SOME
-            : CODE.MATCH_TYPE.NONE
+              ))
+            // Update RESULT
+            RESULT.CONTENTS = isExactMatch ? CODE.MATCH_TYPE.EXACT: 
+            isPartialMatch ? CODE.MATCH_TYPE.SOME: CODE.MATCH_TYPE.NONE
+            RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
             break;
         default:
-          throw 'Unknown type'
+          throw 'Invalid type'
       }
     } catch (error) {
-      console.error('Could not compare data: ' + error)
-      RESULT = CODE.STATUS_TYPE.FAILURE
+      if (CODE.DEBUG_MODE) console.error('Could not compare data: ' + error)
+      // Update RESULT
+      RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+    } finally {
+      return RESULT
     }
-    return RESULT
   }
 
 // DATA MANIPULATION SYSTEM
 const updateBookList = (input, type) => {
-    const oldBookList = [...data.bookList]
+  const RESULT = {
+    STATUS: CODE.STATUS_TYPE.WAIT,
+    CONTENTS: null
+  }
+  try {
     // Push newBook or replace bookList with newBookList
     switch (type) {
       case CODE.OBJ_TYPE.BOOK:
         data.bookList.push(input)
-      break;
+        // Update RESULT
+        RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
+        break;
       case CODE.OBJ_TYPE.BOOKLIST:
         data.bookList = input
-      break;
+        // Update RESULT
+        RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
+        break;
       default:
-      console.error('Invalid type, could not update book list.')
-    }
-    return oldBookList
+        throw 'Invalid type'
+    } 
+  } catch (error) {
+    if (CODE.DEBUG_MODE) console.error('Could not update book list: ' + error)
+    // Update RESULT
+    RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+  } finally {
+    return RESULT
+  }
   }
   
 const addBook = ({...bookData}) => {
-    let RESULT // BOOK or STATUS_FAILURE
+    const RESULT = { 
+      STATUS: CODE.STATUS_TYPE.WAIT,
+      CONTENTS: null // BOOK
+    }
     try {
       const BOOK = new Book(...bookData) // Contains data validation
       updateBookList(BOOK, CODE.OBJ_TYPE.BOOK)
-      RESULT = BOOK
+      // Update RESULT
+      RESULT.CONTENTS = BOOK
+      RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
       console.error('Could not add book to database: ' + error)
-      RESULT = CODE.STATUS_TYPE.FAILURE
+      // Update RESULT
+      RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+    } finally {
+      return RESULT
     }
-    return RESULT
   }
 
 const deleteBooks = ([...idList]) => {
-    let RESULT // deletedBooks or STATUS_FAILURE
+    const RESULT = {
+      STATUS: CODE.STATUS_TYPE.WAIT,
+      CONTENTS: null // deletedBooks
+    }
     try {
       // Use valid ids only
       const safeDeleteList = idList
@@ -290,16 +340,23 @@ const deleteBooks = ([...idList]) => {
       const BOOKLIST = data.bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) < 0)
       // Update database
       updateBookList(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
-      RESULT = deletedBooks
+      // Update RESULT
+      RESULT.CONTENTS = deletedBooks
+      RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
-      console.error('Could not delete books: ' + error)
-      RESULT = CODE.STATUS_TYPE.FAILURE
+      if (CODE.DEBUG_MODE) console.error('Could not delete books: ' + error)
+      // Update RESULT
+      RESULT.STATUS_TYPE = CODE.STATUS_TYPE.FAILURE
+    } finally {
+      return RESULT
     }
-    return RESULT
   }
 
 const searchList = ({...searchTermsObject}) => {
-    let RESULT // searchResults or STATUS_FAILURE
+    const RESULT = {
+      STATUS: CODE.STATUS_TYPE.WAIT,
+      CONTENTS: null // searchResults
+    }
     try {
       // Filters & refines BOOKLIST according to searchTerms
       const filteringLogic = (previousResults, currentSearchTerm) => {
@@ -332,82 +389,109 @@ const searchList = ({...searchTermsObject}) => {
       const safeBookList = getSafeData(data.bookList, CODE.OBJ_TYPE.BOOKLIST)
       const searchTermsArray = Object.entries(searchTermsObject)
       const searchResults = searchTermsArray.reduce(filteringLogic, safeBookList)
-      RESULT = searchResults
+      // Update RESULT
+      RESULT.CONTENTS = searchResults
+      RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
-      console.error('Could not complete search: ' + error)
-      RESULT = CODE.STATUS_TYPE.FAILURE
+      if (CODE.DEBUG_MODE) console.error('Could not complete search: ' + error)
+      // Update RESULT
+      RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+    } finally {
+      return RESULT
     }
-    return RESULT
   }
 
 // BROWSER STORAGE SYSTEM
 const saveToBrowser = () => {
-    let RESULT // STATUS_SUCCESS or FAILURE
+    const RESULT = {
+      STATUS = CODE.STATUS_TYPE.WAIT,
+      CONTENTS = null
+    }
     try {
       // Sanitize data for storage
       const safeData = getSafeData(data.bookList, CODE.OBJ_TYPE.BOOKLIST)
       const safeDataString = JSON.stringify(safeData)
       // Attempt to save
       localStorage.setItem(CODE.OBJ_TYPE.BOOKLIST, safeDataString)
+      // Update RESULT
       RESULT = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
       // Log error
-      console.error('Save to browser failed: ' + error)
+      if (CODE.DEBUG_MODE) console.error('Save to browser failed: ' + error)
+      // Update RESULT
       RESULT = CODE.STATUS_TYPE.FAILURE
+    } finally {
+      return RESULT
     }
-    return RESULT
   }
   
 const loadFromBrowser = () => {
-    let RESULT // STATUS_SUCCESS or FAILURE
+    const RESULT = {
+      STATUS: CODE.STATUS_TYPE.WAIT,
+      CONTENTS: null
+    }
     try {
       // Check for stored data & sanitize, else use default if empty
       const dataFound = localStorage.getItem(CODE.DATASTORE_LABEL)
       const parsedData = dataFound ? JSON.parse(dataFound) : [...metaData.default.bookList]
       const safeData = getSafeData(parsedData, CODE.OBJ_TYPE.BOOKLIST)
       updateBookList(safeData, CODE.OBJ_TYPE.BOOKLIST)
-      RESULT = CODE.STATUS_TYPE.SUCCESS
+      // Update RESULT
+      RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
       // Log error
       error => console.error('Load from browser failed: ' + error)
-      RESULT = CODE.STATUS_TYPE.FAILURE
+      // Update RESULT
+      RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
     }
     return RESULT
   }
 
 // SESSION STORAGE SYSTEM
 const saveToSesssion = () => {
-    let RESULT // STATUS_SUCCESS or FAILURE
+    const RESULT = {
+      STATUS: CODE.STATUS_TYPE.WAIT,
+      CONTENTS: null
+    }
     try {
       // Sanitize data for storage
       const safeData = getSafeData(data.bookList, CODE.OBJ_TYPE.BOOKLIST)
       const safeDataString = JSON.stringify(safeData)
       // Attempt to save
       sessionStorage.setItem(CODE.OBJ_TYPE.BOOKLIST, safeDataString)
-      RESULT = CODE.STATUS_TYPE.SUCCESS
+      // Update RESULT
+      RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
       // Log error
-      console.error('Save to session storage failed: ' + error)
-      RESULT = CODE.STATUS_TYPE.FAILURE
+      if (DEBUG_MODE) console.error('Save to session storage failed: ' + error)
+      // Update RESULT
+      RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+    } finally {
+      return RESULT
     }
-    return RESULT
   }
   
 const loadFromSesssion = () => {
-    let RESULT // STATUS_SUCCESS or FAILURE
+    const RESULT = {
+      STATUS: CODE.STATUS_TYPE.WAIT,
+      CONTENTS: null
+    }
     try {
       // Check for stored data & sanitize, else use default if empty
       const dataFound = sessionStorage.getItem(CODE.DATASTORE_LABEL)
       const parsedData = dataFound ? JSON.parse(dataFound) : [...metaData.default.bookList]
       const safeData = getSafeData(parsedData, CODE.OBJ_TYPE.BOOKLIST)
       updateBookList(safeData, CODE.OBJ_TYPE.BOOKLIST)
-      RESULT = CODE.STATUS_TYPE.SUCCESS
+      // Update RESULT
+      RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
       // Log error
-      error => console.error('Load from session storage failed: ' + error)
-      RESULT = CODE.STATUS_TYPE.FAILURE
+      if (CODE.DEBUG_MODE) console.error('Load from session storage failed: ' + error)
+      // Update RESULT
+      RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+    } finally {
+      return RESULT
     }
-    return RESULT
   }
 
 // dataAPI
