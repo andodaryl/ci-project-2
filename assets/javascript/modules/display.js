@@ -132,7 +132,7 @@ const deleteBook = (...idList) => {
 }
 
 // BOOK SYSTEM
-const  toggleVisibility = (element, visible = null) => {
+const toggleVisibility = (element, visible = null) => {
   const RESULT = {
     STATUS: CODE.STATUS_TYPE.WAIT,
     CONTENTS: null
@@ -157,30 +157,27 @@ const  toggleVisibility = (element, visible = null) => {
 const showBook = (...bookIdList) => {
   const RESULT = {
     STATUS: CODE.STATUS_TYPE.WAIT,
-    CONTENTS: null 
+    CONTENTS: null // id list of books displayed
   }
     try {
       // Sanitize data
-      const BOOKLIST = [...data.bookList]
-      const safeBookList = databaseAPI.getSafeData(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
-      const safeIdList = bookIdList.map(id => {
-        const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
-        const safeField = databaseAPI.getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
-        const safeId = safeField[0]
-        return safeId
-      })
+      const checkBooklist = dataAPI.getSafeBookList(data.bookList)
+      if (checkBooklist.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
+      const safeBookList = checkBooklist.CONTENTS
+      // Use safe IDs only
+      const safeIdList = bookIdList
+      .filter(id => dataAPI.isBookField(CODE.FIELD_TYPE.ID, id).CONTENTS) // nulls are removed
       // Only target existing books
-      const validIdList = safeBookList
+      const targetIdList = safeBookList
       .filter(BOOK => safeIdList.includes(BOOK[CODE.FIELD_TYPE.ID]))
       // Show BookCard for valid targets
-      for (let index = 0; index < validIdList.length; index++) {
-        const validId = validIdList[index];
-        const BOOK = safeBookList.find(BOOK => BOOK[CODE.FIELD_TYPE.ID] === validId)
-        const newBookCard = this.createBookCard(BOOK)
-        // Show BookCard in display for target book
-        display.appendChild(newBookCard)
-      }
+      targetIdList.forEach(id => {
+        const attribute = `[data-book-id="${id}"]`
+        const BookCard = document.querySelector(attribute)
+        toggleVisibility(BookCard, true)
+      });
       // Update RESULT
+      RESULT.CONTENTS = targetIdList
       RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
       if (CODE.DEBUG_MODE) console.error('Could not display target books: ' + error)
@@ -192,38 +189,37 @@ const showBook = (...bookIdList) => {
   }
 
 const hideBook = (...bookIdList) => {
-  const RESULT = {
-    STATUS: CODE.STATUS_TYPE.WAIT,
-    CONTENTS: null // newBookList 
-  }
-    try {
-      // Sanitize data
-      const safeIdList = bookIdList.map(id => {
-        const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
-        const safeField = databaseAPI.getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
-        const safeId = safeField[0]
-        return safeId
-      })
-      const BOOKLIST = [...data.bookList]
-      const safeBookList = databaseAPI.getSafeData(BOOKLIST, DOC.OBJ_TYPE.BOOKLIST)
-      // Only target existing books
-      const validIdList = safeBookList
-      .filter(BOOK => safeIdList.includes(BOOK[CODE.FIELD_TYPE.ID]))
-      // Delete target BookCards
-      for (let index = 0; index < validIdList.length; index++) {
-        const validId = validIdList[index];
-        const BookCard = display.querySelector(`data-book-id="${validId}"`)
-        BookCard.remove()        
-      }
-      // Update RESULT
-      RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
-    } catch (error) {
-      if (CODE.DEBUG_MODE) console.error('Could not hide target books: ' + error)
-      // Update RESULT
-      RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
-    } finally {
-      return RESULT
+    const RESULT = {
+      STATUS: CODE.STATUS_TYPE.WAIT,
+      CONTENTS: null // id list of books displayed
     }
+      try {
+        // Sanitize data
+        const checkBooklist = dataAPI.getSafeBookList(data.bookList)
+        if (checkBooklist.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
+        const safeBookList = checkBooklist.CONTENTS
+        // Use safe IDs only
+        const safeIdList = bookIdList
+        .filter(id => dataAPI.isBookField(CODE.FIELD_TYPE.ID, id).CONTENTS) // nulls are removed
+        // Only target existing books
+        const targetIdList = safeBookList
+        .filter(BOOK => safeIdList.includes(BOOK[CODE.FIELD_TYPE.ID]))
+        // Show BookCard for valid targets
+        targetIdList.forEach(id => {
+          const attribute = `[data-book-id="${id}"]`
+          const BookCard = document.querySelector(attribute)
+          toggleVisibility(BookCard, false)
+        });
+        // Update RESULT
+        RESULT.CONTENTS = targetIdList
+        RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
+      } catch (error) {
+        if (CODE.DEBUG_MODE) console.error('Could not hide target books: ' + error)
+        // Update RESULT
+        RESULT = CODE.STATUS_TYPE.FAILURE
+      } finally {
+        return RESULT
+      }
   }
 
 // BOOK LIST SYSTEM
@@ -234,14 +230,13 @@ const checkDisplay = () => {
   }
     try {
       // Find & sanitise ids of BookCards on display
-      const cardBookList = display.querySelectorAll(['data-book-id'])
+      const cardBookList = display.querySelectorAll(['[data-book-id]'])
       const safeIdList = []
       for (let index = 0; index < cardBookList.length; index++) {
         const CardBook = cardBookList[index];
         const id = CardBook.getAttribute('data-book-id')
-        const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
-        const safeField = databaseAPI.checkDataIntegrity(BOOKFIELD, CODE.FIELD_TYPE)
-        const safeId = safeField[1]
+        const safeBookFieldArray = dataAPI.getSafeBookField(CODE.FIELD_TYPE.ID, id).CONTENTS
+        const safeId = safeBookFieldArray[1]
         safeIdList.push(safeId) // Use safeId
       }
       // Return books on display
@@ -258,25 +253,29 @@ const checkDisplay = () => {
     }
   }
 
-const updateDisplay = () => {
+const syncDisplay = () => {
   const RESULT = {
     STATUS: CODE.STATUS_TYPE.WAIT,
-    CONTENTS: null
+    CONTENTS: null // id list of books displayed
   }
     try {
       // Get id list of books displayed
       const displayedBooksIdList = this.checkDisplay() // includes error check
       // Find & sanitise ids of BookCards to display
-      const BOOKLIST = [data.bookList]
-      const safeBookList = databaseAPI.getSafeData(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
+      const checkBookList = dataAPI.getSafeBookList(data.bookList)
+      if (checkBookList.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
+      const safeBookList = checkBookList.CONTENTS
+      // Get id list
+      const targetIdList = safeBookList.map(book => book[CODE.FIELD_TYPE.ID])
       // Remove books currently on display
       this.hideBook(...displayedBooksIdList)
       // Display safe books from display book list
-      this.showBook(...safeBookList)
+      this.showBook(...targetIdList)
       // Update RESULT
+      RESULT.CONTENTS = targetIdList
       RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
-      if (CODE.DEBUG_MODE) console.error('Could not retrieve books being displayed: ' + error)
+      if (CODE.DEBUG_MODE) console.error('Could not display target books: ' + error)
       // Update RESULT
       RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
     } finally {
@@ -285,14 +284,14 @@ const updateDisplay = () => {
   }
 
 return {
-  toggleVisibility,
   syncBookList,
   replaceBookList,
   addBook,
   deleteBook,
+  toggleVisibility,
   showBook,
   hideBook,
   checkDisplay,
-  updateDisplay,
+  syncDisplay,
 }
 })()
