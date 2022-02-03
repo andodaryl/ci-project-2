@@ -407,9 +407,10 @@ const deleteBook = (...idList) => {
       const targetBooks = data.bookList
       .filter(book => safeDeleteList.indexOf(book[CODE.FIELD_TYPE.ID]) > -1 )
       // Create new book list with target books removed
-      const newBookList = data.bookList.filter(book => safeDeleteList.indexOf(book.bookNumber) < 0)
+      const newBookList = data.bookList.filter(book => 
+        safeDeleteList.indexOf(book[CODE.FIELD_TYPE.ID]) < 0)
       // Update database
-      replaceBookList(newBookList, CODE.OBJ_TYPE.BOOK_LIST)
+      replaceBookList(newBookList)
       // Update RESULT
       RESULT.CONTENTS = targetBooks
       RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
