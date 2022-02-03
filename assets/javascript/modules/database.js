@@ -246,6 +246,28 @@ const getSafeBookField = (type, value) => {
 }
 
 // DATA MANIPULATION SYSTEM
+const readBookList = () => {
+  const RESULT = { 
+    STATUS: CODE.STATUS_TYPE.WAIT,
+    CONTENTS: null
+  }
+  try {
+    let safeBooklist
+    const check = getSafeBookList(data.bookList, false)
+    // Early exit if getSafeBookList fails else continue
+    if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Book list failed shallow safety check'
+    safeBooklist = check.CONTENTS
+    // Update RESULT
+    RESULT.CONTENTS = safeBooklist
+    RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
+  } catch (error) {
+    console.error('Could not read book list: ' + error)
+    // Update RESULT
+    RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+  } finally {
+    return RESULT
+  }
+}
 const resetBookList = () => {
   const RESULT = { 
     STATUS: CODE.STATUS_TYPE.WAIT,
@@ -513,6 +535,7 @@ return {
   getSafeBookList,
   getSafeBook,
   getSafeBookField,
+  readBookList,
   resetBookList,
   replaceBookList,
   searchBookList,
