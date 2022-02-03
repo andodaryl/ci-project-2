@@ -1,4 +1,4 @@
-export default CODE = (function() {
+export default (function() {
    // PUBLIC DICTIONARY
    return {
     DEBUG_MODE: true,

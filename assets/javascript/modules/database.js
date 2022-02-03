@@ -2,7 +2,7 @@
 import CODE from './dictionary.js' // Public Dictionary
 
 // EXPORT
-export default dataAPI = (function() {
+export default (function() {
 
 // HELPER FUNCTIONS
 const isObjectLiteral = input => 
@@ -391,8 +391,8 @@ const deleteBook = (...idList) => {
 // BROWSER STORAGE SYSTEM
 const saveToBrowser = () => {
     const RESULT = {
-      STATUS = CODE.STATUS_TYPE.WAIT,
-      CONTENTS = null
+      STATUS: CODE.STATUS_TYPE.WAIT,
+      CONTENTS: null
     }
     try {
       // Sanitize data for storage

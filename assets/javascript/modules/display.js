@@ -1,7 +1,7 @@
 // IMPORTS
 import CODE from './dictionary.js' // Public Dictionary
 
-export default displayAPI = (function() {
+export default (function() {
 // ELEMENTS
 const display = document.querySelector('#display')
 
