@@ -54,6 +54,8 @@ const isBookList = (input, deepCheck = false) => {
   }
   try {
     // Update RESULT
+    // Shallow check: data type
+    // Deep check: all array items are books that have safe fields
     RESULT.CONTENTS = deepCheck
     ? Array.isArray(input) && input.every(book => isBook(book).CONTENTS)
     : Array.isArray(input)
@@ -74,6 +76,8 @@ const isBook = (input, deepCheck = false) => {
   }
   try {
     // Update RESULT
+    // Shallow check: data type
+    // Deep check: all field types are safe
     RESULT.CONTENTS = deepCheck
     ? isObjectLiteral(input) && Object.entries(input)
     .every(bookFieldArray => isBookField(bookFieldArray).CONTENTS)
@@ -138,11 +142,12 @@ const getSafeBookList = (input, deepCheck = true) => {
     const safeBookListArray = [...data.default[type]]
     const updateSafeData = booksArray => safeBookListArray.push(...booksArray)
     // Return default book list if fail shallow check
-    // Return list of safe books that pass deep check
+    // Return array of safe books that pass deep check
     // Return input if pass shallow check
     if (isBookList(input).CONTENTS) {
       const childrenArray = deepCheck
-      ? input.map(book => getSafeBook(book))
+      ? input.map(BOOK => getSafeBook(BOOK, deepCheck).CONTENTS) // returns null if fail
+      .filter(BOOK => isBook(BOOK, deepCheck).CONTENTS) // removes null items
       : [...input]
       updateSafeData(childrenArray)
     }
@@ -176,7 +181,9 @@ const getSafeBook = (input, deepCheck = true) => {
     // Return input if pass shallow check
     if (isBook(input).CONTENTS) {
       const childrenArray = deepCheck
-      ? Object.entries(input).map(BOOK_FIELD => getSafeBookField(BOOK_FIELD))
+      ? Object.entries(input)
+      .map(BOOK_FIELD => getSafeBookField(BOOK_FIELD).CONTENTS) // returns null if fail
+      .filter(BOOK_FIELD => isBookField(BOOK_FIELD).CONTENTS) // removes null items
       : {...input}
       updateSafeData(childrenArray)
     }
@@ -239,19 +246,32 @@ const getSafeBookField = (input) => {
 const updateBookList = (input, type) => {
   const RESULT = {
     STATUS: CODE.STATUS_TYPE.WAIT,
-    CONTENTS: null
+    CONTENTS: null // books added
   }
   try {
-    // Push newBook or replace bookList with newBookList
+    // Push new book or replace book list with new version
     switch (type) {
       case CODE.OBJ_TYPE.BOOK:
-        data.bookList.push(input)
+        // Attempt to get safe book
+        const check = getSafeBook(input, true)
+        // Exit early if getSafeBook fails else continue + push new book to list
+        if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book'
+        const safeBookObject = check.CONTENTS
+        data.bookList.push(safeBookObject)
         // Update RESULT
+        RESULT.CONTENTS = safeBookObject
         RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
         break;
-      case CODE.OBJ_TYPE.BOOKLIST:
-        data.bookList = input
+      case CODE.OBJ_TYPE.BOOK_LIST:
+        // Attempt to get safe book list
+        const check = getSafeBookList(input, true)
+        // Exit early if getSafeBookList fails else continue + replace book list
+        if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
+        const safeBookListArray = check.CONTENTS
+        data.bookList.length = 0
+        data.bookList.push(...safeBookListArray)
         // Update RESULT
+        RESULT.CONTENTS = safeBookListArray
         RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
         break;
       default:
