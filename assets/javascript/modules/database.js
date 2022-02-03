@@ -125,7 +125,7 @@ const isBookField = (type, value) => {
         throw 'Invalid type'
     }
   } catch (error) {
-    if (DEBUG_MODE) console.error('Could not check if input is book field: ' + error)
+    if (CODE.DEBUG_MODE) console.error('Could not check if input is book field: ' + error)
     // Update RESULT
     RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
   } finally {
@@ -139,7 +139,7 @@ const getSafeBookList = (input, deepCheck = true) => {
     CONTENTS: null // BOOK_LIST
   }
   try {
-    const safeBookListArray = [...data.default[type]]
+    const safeBookListArray = [...data.default.bookList]
     const updateSafeData = booksArray => safeBookListArray.push(...booksArray)
     // Return default book list if fail shallow check
     // Return array of safe books that pass deep check
@@ -169,10 +169,10 @@ const getSafeBook = (input, deepCheck = true) => {
     CONTENTS: null // BOOK
   }
   try {
-    const safeBookObject = [...data.default[type]]
+    const safeBookObject = {...data.default.book}
     const updateSafeData = bookFieldArray => {
       bookFieldArray.forEach(BOOK_FIELD => {
-        [FIELD_TYPE, FIELD_VALUE] = BOOK_FIELD
+        const [FIELD_TYPE, FIELD_VALUE] = BOOK_FIELD
         safeBookObject[FIELD_TYPE] = FIELD_VALUE
       })
     }
@@ -218,7 +218,7 @@ const getSafeBookField = (type, value) => {
         // Return input if valid else default value
         RESULT.CONTENTS = isBookField(type, value).CONTENTS
         ? [type, value]
-        : [type, data.default[type]]
+        : [type, data.default.book[type]]
         RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
         break;
       case CODE.FIELD_TYPE.ID:
@@ -233,7 +233,7 @@ const getSafeBookField = (type, value) => {
         throw 'Invalid type'
     }
   } catch (error) {
-    if (DEBUG_MODE) console.error('Could not check if input is book field: ' + error)
+    if (CODE.DEBUG_MODE) console.error('Could not check if input is book field: ' + error)
     // Update RESULT
     RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
   } finally {
@@ -297,7 +297,7 @@ const searchBookList = (searchTermsObject) => {
     if (!isObjectLiteral(searchTermsObject)) searchTermsObject = {}
     // Filters & refines BOOKLIST according to searchTerms
     const filteringLogic = (previousResults, currentSearchTerm) => {
-      const safeData = getSafeData(currentSearchTerm, CODE.OBJ_TYPE.BOOKFIELD)
+      const safeData = getSafeBookField(...currentSearchTerm)
       const [FIELD_TYPE, FIELD_VALUE] = safeData
       switch(FIELD_TYPE) {
         case CODE.FIELD_TYPE.TITLE:
@@ -323,7 +323,7 @@ const searchBookList = (searchTermsObject) => {
       }
     }
     // Activate process
-    const safeBookList = getSafeData(data.bookList, CODE.OBJ_TYPE.BOOK_LIST)
+    const safeBookList = getSafeBookList(data.bookList)
     const searchTermsArray = Object.entries(searchTermsObject)
     const searchResults = searchTermsArray.reduce(filteringLogic, safeBookList)
     // Update RESULT
@@ -348,7 +348,7 @@ const addBook = (bookDataObject) => {
       // Exit early if getSafeBook fails else continue
       if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book'
       const safeBookObject = check.CONTENTS
-      const BOOK = new Book(...safeBookObject)
+      const BOOK = new Book(safeBookObject)
       data.bookList.push(BOOK) // Add to book list
       // Update RESULT
       RESULT.CONTENTS = BOOK
@@ -398,7 +398,7 @@ const saveToBrowser = () => {
     }
     try {
       // Sanitize data for storage
-      const safeData = getSafeData(data.bookList, CODE.OBJ_TYPE.BOOK_LIST)
+      const safeData = getSafeBookList(data.bookList)
       const safeDataString = JSON.stringify(safeData)
       // Attempt to save
       localStorage.setItem(CODE.OBJ_TYPE.BOOK_LIST, safeDataString)
@@ -422,9 +422,9 @@ const loadFromBrowser = () => {
     try {
       // Check for stored data & sanitize, else use default if empty
       const dataFound = localStorage.getItem(CODE.DATASTORE_LABEL)
-      const parsedData = dataFound ? JSON.parse(dataFound) : [...metaData.default.bookList]
-      const safeData = getSafeData(parsedData, CODE.OBJ_TYPE.BOOK_LIST)
-      updateBookList(safeData, CODE.OBJ_TYPE.BOOK_LIST)
+      const parsedData = dataFound ? JSON.parse(dataFound) : [...data.default.bookList]
+      const safeData = getSafeBookList(parsedData)
+      replaceBookList(safeData)
       // Update RESULT
       RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
@@ -444,7 +444,7 @@ const saveToSession = () => {
     }
     try {
       // Sanitize data for storage
-      const safeData = getSafeData(data.bookList, CODE.OBJ_TYPE.BOOK_LIST)
+      const safeData = getSafeBookList(data.bookList)
       const safeDataString = JSON.stringify(safeData)
       // Attempt to save
       sessionStorage.setItem(CODE.OBJ_TYPE.BOOK_LIST, safeDataString)
@@ -452,7 +452,7 @@ const saveToSession = () => {
       RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
       // Log error
-      if (DEBUG_MODE) console.error('Save to session storage failed: ' + error)
+      if (CODE.DEBUG_MODE) console.error('Save to session storage failed: ' + error)
       // Update RESULT
       RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
     } finally {
@@ -468,9 +468,9 @@ const loadFromSession = () => {
     try {
       // Check for stored data & sanitize, else use default if empty
       const dataFound = sessionStorage.getItem(CODE.DATASTORE_LABEL)
-      const parsedData = dataFound ? JSON.parse(dataFound) : [...metaData.default.bookList]
-      const safeData = getSafeData(parsedData, CODE.OBJ_TYPE.BOOK_LIST)
-      updateBookList(safeData, CODE.OBJ_TYPE.BOOK_LIST)
+      const parsedData = dataFound ? JSON.parse(dataFound) : [...data.default.bookList]
+      const safeData = getSafeBookList(parsedData)
+      replaceBookList(safeData)
       // Update RESULT
       RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
     } catch (error) {
