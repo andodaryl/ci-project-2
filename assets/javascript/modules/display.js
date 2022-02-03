@@ -75,32 +75,24 @@ const syncBookList = () => {
   }
 }
 
-
-const addBookData = (bookData) => {
+const addBook = (bookData) => {
   const RESULT = {
     STATUS: CODE.STATUS_TYPE.WAIT,
-    CONTENTS: null // newBookList 
+    CONTENTS: null // new book
   }
   try {
-    const BOOKLIST = [...data.bookList]
-    const BOOK = bookData
-    const safeBook = databaseAPI.getSafeData(BOOK, CODE.OBJ_TYPE.BOOK)
-    const newBookList = []
-    const updateNewBookList = (BOOKLIST) => {
-      newBookList.push(...BOOKLIST)
-    }
-    // Check if book exists in display book list
-    const existingBook = BOOKLIST
-    .some(BOOK => BOOK[CODE.FIELD_TYPE.ID] === safeBook[CODE.FIELD_TYPE.ID])
-    // Replace existing book with new version else add new book to list
-    if (existingBook) {
-      const bookListWithoutExistingBook = this.removeBookData(safeBook[CODE.FIELD_TYPE.ID])
-      updateNewBookList(...bookListWithoutExistingBook, safeBook)
-    } else {
-      updateNewBookList(...BOOKLIST, safeBook)
-    }
+    const checkBook = dataAPI.getSafeBook(bookData)
+    // Early exit if getSafeBook fails else continue
+    if (checkBook.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book'
+    const safeBook = checkBook.CONTENTS
+    const checkBookList = dataAPI.getSafeBookList(data.bookList)
+    // Early exit if getSafeBookList fails else continue
+    if (checkBookList.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
+    const safeBookList = checkBookList.CONTENTS
+    const newBookList = [...safeBookList, safeBook] // concat new book with old book list
+    resetBookList(newBookList)
     // Update RESULT
-    RESULT.CONTENTS = newBookList
+    RESULT.CONTENTS = safeBook
     RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
   } catch (error) {
     if (CODE.DEBUG_MODE) console.error('Could not add book to display BOOKLIST: ' + error)
@@ -110,31 +102,30 @@ const addBookData = (bookData) => {
   }
 }
 
-const removeBookData = (...bookIdList) => {
+const deleteBook = (...idList) => {
   const RESULT = {
     STATUS: CODE.STATUS_TYPE.WAIT,
-    CONTENTS: null // newBookList 
+    CONTENTS: null // target books for deletion
   }
   try {
-    // Sanitize data
-    const BOOKLIST = data.bookList
-    const safeIdList = bookIdList.map(id => {
-      const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
-      const safeField = databaseAPI.getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
-      const safeId = safeField[1]
-      return safeId
-    })
-    const safeBookList = databaseAPI.getSafeData(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
-    // Get newBookList which excludes target books
-    const newBookList = safeBookList
-    .filter(BOOK => !safeIdList.includes(BOOK[CODE.OBJ_TYPE.ID]))
+    // Use safe IDs only
+    const safeDeleteList = idList
+    .filter(id => dataAPI.isBookField(CODE.FIELD_TYPE.ID, id).CONTENTS) // nulls are removed
+    // Find books to be deleted from book list: check if book id is in safeDeleteList
+    const targetBooks = data.bookList
+    .filter(book => safeDeleteList.indexOf(book[CODE.FIELD_TYPE.ID]) > -1 )
+    // Create new book list with target books removed
+    const newBookList = data.bookList.filter(book => 
+      safeDeleteList.indexOf(book[CODE.FIELD_TYPE.ID]) < 0)
+    // Update datastore
+    replaceBookList(newBookList)
     // Update RESULT
-    RESULT.CONTENTS = newBookList
+    RESULT.CONTENTS = targetBooks
     RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
   } catch (error) {
-    if (CODE.DEBUG_MODE) console.error('Could not remove books: ' + error)
+    if (CODE.DEBUG_MODE) console.error('Could not delete books: ' + error)
     // Update RESULT
-    RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+    RESULT.STATUS_TYPE = CODE.STATUS_TYPE.FAILURE
   } finally {
     return RESULT
   }
@@ -297,8 +288,8 @@ return {
   toggleVisibility,
   syncBookList,
   replaceBookList,
-  addBookData,
-  removeBookData,
+  addBook,
+  deleteBook,
   showBook,
   hideBook,
   checkDisplay,
