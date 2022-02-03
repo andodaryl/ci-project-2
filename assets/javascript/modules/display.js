@@ -10,13 +10,13 @@ const data = {
   bookList: []
 }
 
-const addBookData = ({...bookData}) => {
+const addBookData = (bookData) => {
   const RESULT = {
     STATUS: CODE.STATUS_TYPE.WAIT,
     CONTENTS: null // newBookList 
   }
   try {
-    const BOOKLIST = [...config.bookList]
+    const BOOKLIST = [...data.bookList]
     const BOOK = bookData
     const safeBook = databaseAPI.getSafeData(BOOK, CODE.OBJ_TYPE.BOOK)
     const newBookList = []
@@ -51,7 +51,7 @@ const removeBookData = (...bookIdList) => {
   }
   try {
     // Sanitize data
-    const BOOKLIST = config.bookList
+    const BOOKLIST = data.bookList
     const safeIdList = bookIdList.map(id => {
       const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
       const safeField = databaseAPI.getSafeData(BOOKFIELD, CODE.OBJ_TYPE.BOOKFIELD)
@@ -84,8 +84,8 @@ const  updateBookData = (...bookList) => {
     const BOOKLIST = bookList
     const safeBookList = databaseAPI.getSafeData(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
     // Clear display bookList & push new books
-    config.bookList.length = 0
-    config.bookList.push(...safeBookList)
+    data.bookList.length = 0
+    data.bookList.push(...safeBookList)
     // Update RESULT
     RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
   } catch (error) {
@@ -127,7 +127,7 @@ const showBook = (...bookIdList) => {
   }
     try {
       // Sanitize data
-      const BOOKLIST = [...config.bookList]
+      const BOOKLIST = [...data.bookList]
       const safeBookList = databaseAPI.getSafeData(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
       const safeIdList = bookIdList.map(id => {
         const BOOKFIELD = [CODE.FIELD_TYPE.ID, id]
@@ -170,7 +170,7 @@ const hideBook = (...bookIdList) => {
         const safeId = safeField[0]
         return safeId
       })
-      const BOOKLIST = [...config.bookList]
+      const BOOKLIST = [...data.bookList]
       const safeBookList = databaseAPI.getSafeData(BOOKLIST, DOC.OBJ_TYPE.BOOKLIST)
       // Only target existing books
       const validIdList = safeBookList
@@ -233,7 +233,7 @@ const updateDisplay = () => {
       // Get id list of books displayed
       const displayedBooksIdList = this.checkDisplay() // includes error check
       // Find & sanitise ids of BookCards to display
-      const BOOKLIST = [config.bookList]
+      const BOOKLIST = [data.bookList]
       const safeBookList = databaseAPI.getSafeData(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
       // Remove books currently on display
       this.hideBook(...displayedBooksIdList)

@@ -3,7 +3,7 @@ import CODE from '../modules/dictionary.js'
 import displayAPI from '../modules/display.js'
 
 // EXPORT add book card behaviour
-export default ({...bookData}) => {
+export default (bookData) => {
   const RESULT = {
     STATUS: CODE.STATUS_TYPE.WAIT,
     CONTENTS: null // newBookCard

@@ -287,12 +287,14 @@ const replaceBookList = (input) => {
   }
 }
 
-const searchBookList = ({...searchTermsObject}) => {
+const searchBookList = (searchTermsObject) => {
   const RESULT = {
     STATUS: CODE.STATUS_TYPE.WAIT,
     CONTENTS: null // searchResults
   }
   try {
+    // Default value if invalid input
+    if (!isObjectLiteral(searchTermsObject)) searchTermsObject = {}
     // Filters & refines BOOKLIST according to searchTerms
     const filteringLogic = (previousResults, currentSearchTerm) => {
       const safeData = getSafeData(currentSearchTerm, CODE.OBJ_TYPE.BOOKFIELD)
@@ -336,13 +338,13 @@ const searchBookList = ({...searchTermsObject}) => {
   }
 }
   
-const addBook = ({...bookData}) => {
+const addBook = (bookDataObject) => {
     const RESULT = { 
       STATUS: CODE.STATUS_TYPE.WAIT,
       CONTENTS: null // new book instance added to book list
     }
     try {
-      const check = getSafeBook(bookData, true)
+      const check = getSafeBook(bookDataObject, true)
       // Exit early if getSafeBook fails else continue
       if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book'
       const safeBookObject = check.CONTENTS
@@ -435,7 +437,7 @@ const loadFromBrowser = () => {
   }
 
 // SESSION STORAGE SYSTEM
-const saveToSesssion = () => {
+const saveToSession = () => {
     const RESULT = {
       STATUS: CODE.STATUS_TYPE.WAIT,
       CONTENTS: null
@@ -458,7 +460,7 @@ const saveToSesssion = () => {
     }
   }
   
-const loadFromSesssion = () => {
+const loadFromSession = () => {
     const RESULT = {
       STATUS: CODE.STATUS_TYPE.WAIT,
       CONTENTS: null
@@ -496,7 +498,7 @@ return {
   deleteBook,
   saveToBrowser,
   loadFromBrowser,
-  saveToSesssion, 
-  loadFromSesssion,
+  saveToSession, 
+  loadFromSession,
 }
 })()
