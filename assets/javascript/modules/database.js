@@ -17,11 +17,13 @@ const getUniqueInteger = () => Date.now()
 class Book {
   constructor({...bookData}) {
     // Get safe book data
-    const BOOK = bookData
-    const safeBookData = getSafeData(BOOK, CODE.OBJ_TYPE.BOOK)
-    // Create instance properties from safe book data + new unique id
-    const BOOKFIELDS = Object.entries(safeBookData)
-    BOOKFIELDS.forEach(BOOKFIELD => this[BOOKFIELD[0]] = BOOKFIELD[1])
+    const safeBookData = getSafeBook(bookData)
+    // Add properties to instance from safe book data + new unique id
+    const bookFieldsArray = Object.entries(safeBookData)
+    bookFieldsArray.forEach(BOOK_FIELD => {
+      [FIELD_TYPE, FIELD_VALUE] = BOOK_FIELD
+      this[FIELD_TYPE] = FIELD_VALUE
+    })
   }
 }
 
