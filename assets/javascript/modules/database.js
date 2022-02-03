@@ -17,7 +17,11 @@ const getUniqueInteger = () => Date.now()
 class Book {
   constructor({...bookData}) {
     // Get safe book data
-    const safeBookData = getSafeBook(bookData)
+    let safeBookData
+    const check = getSafeBook(bookData)
+    // If getSafeBook fails use default book data else continue
+    if (check.STATUS === CODE.STATUS_TYPE.FAILURE) safeBookData = {...data.default.book}
+    safeBookData = check.CONTENTS
     // Add properties to instance from safe book data + new unique id
     this[CODE.FIELD_TYPE.ID] = getUniqueInteger()
     this[CODE.FIELD_TYPE.TITLE] = safeBookData[CODE.FIELD_TYPE.TITLE]
@@ -297,7 +301,10 @@ const searchBookList = (searchTermsObject) => {
     if (!isObjectLiteral(searchTermsObject)) searchTermsObject = {}
     // Filters & refines BOOKLIST according to searchTerms
     const filteringLogic = (previousResults, currentSearchTerm) => {
-      const safeData = getSafeBookField(...currentSearchTerm)
+      const check = getSafeBookField(...currentSearchTerm)
+      // Exit early if getSafeBookField fails else continue
+      if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book field'
+      const safeData = check.CONTENTS
       const [FIELD_TYPE, FIELD_VALUE] = safeData
       switch(FIELD_TYPE) {
         case CODE.FIELD_TYPE.TITLE:
@@ -306,12 +313,12 @@ const searchBookList = (searchTermsObject) => {
             const bookTitle = BOOK[FIELD_TYPE].toLowerCase()
             return bookTitle.includes(FIELD_VALUE.toLowerCase())
           })
-        case CODE.FIELD_TYPE.TOTALPAGES:
+        case CODE.FIELD_TYPE.TOTAL_PAGES:
         case CODE.FIELD_TYPE.YEAR:
           // Check if book + search numbers match
           return previousResults.filter(BOOK => BOOK[FIELD_TYPE] === FIELD_VALUE)
-        case CODE.FIELD_TYPE.AUTHORLIST:
-        case CODE.FIELD_TYPE.SUBJECTLIST:
+        case CODE.FIELD_TYPE.AUTHOR_LIST:
+        case CODE.FIELD_TYPE.SUBJECT_LIST:
           // Check if some author/subjects in book are in subSearchTerms: case insensitive
           return previousResults.filter(BOOK => {
             const BOOKFIELD = BOOK[FIELD_TYPE]
@@ -323,7 +330,10 @@ const searchBookList = (searchTermsObject) => {
       }
     }
     // Activate process
-    const safeBookList = getSafeBookList(data.bookList)
+    const check = getSafeBookList(data.bookList)
+    // Exit early if getSafeBookList fails else continue
+    if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
+    const safeBookList = check.CONTENTS
     const searchTermsArray = Object.entries(searchTermsObject)
     const searchResults = searchTermsArray.reduce(filteringLogic, safeBookList)
     // Update RESULT
@@ -344,7 +354,7 @@ const addBook = (bookDataObject) => {
       CONTENTS: null // new book instance added to book list
     }
     try {
-      const check = getSafeBook(bookDataObject, true)
+      const check = getSafeBook(bookDataObject)
       // Exit early if getSafeBook fails else continue
       if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book'
       const safeBookObject = check.CONTENTS
@@ -398,7 +408,10 @@ const saveToBrowser = () => {
     }
     try {
       // Sanitize data for storage
-      const safeData = getSafeBookList(data.bookList)
+      const check = getSafeBookList(data.bookList)
+      // Exit early if getSafeBookList fails else continue
+      if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
+      const safeData = check.CONTENTS
       const safeDataString = JSON.stringify(safeData)
       // Attempt to save
       localStorage.setItem(CODE.OBJ_TYPE.BOOK_LIST, safeDataString)
@@ -423,7 +436,10 @@ const loadFromBrowser = () => {
       // Check for stored data & sanitize, else use default if empty
       const dataFound = localStorage.getItem(CODE.DATASTORE_LABEL)
       const parsedData = dataFound ? JSON.parse(dataFound) : [...data.default.bookList]
-      const safeData = getSafeBookList(parsedData)
+      const check = getSafeBookList(parsedData)
+      // Exit early if getSafeBookList fails else continue
+      if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
+      const safeData = check.CONTENTS
       replaceBookList(safeData)
       // Update RESULT
       RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
@@ -444,7 +460,10 @@ const saveToSession = () => {
     }
     try {
       // Sanitize data for storage
-      const safeData = getSafeBookList(data.bookList)
+      const check = getSafeBookList(data.bookList)
+      // Exit early if getSafeBookList fails else continue
+      if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
+      const safeData = check.CONTENTS
       const safeDataString = JSON.stringify(safeData)
       // Attempt to save
       sessionStorage.setItem(CODE.OBJ_TYPE.BOOK_LIST, safeDataString)
@@ -469,7 +488,10 @@ const loadFromSession = () => {
       // Check for stored data & sanitize, else use default if empty
       const dataFound = sessionStorage.getItem(CODE.DATASTORE_LABEL)
       const parsedData = dataFound ? JSON.parse(dataFound) : [...data.default.bookList]
-      const safeData = getSafeBookList(parsedData)
+      const check = getSafeBookList(parsedData)
+      // Exit early if getSafeBookList fails else continue
+      if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
+      const safeData = check.CONTENTS
       replaceBookList(safeData)
       // Update RESULT
       RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
