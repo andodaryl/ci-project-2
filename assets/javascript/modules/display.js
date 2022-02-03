@@ -1,5 +1,6 @@
 // IMPORTS
-import CODE from './dictionary.js' // Public Dictionary
+import CODE from './dictionary.js'
+import dataAPI from './database.js'
 
 export default (function() {
 // ELEMENTS
@@ -9,6 +10,71 @@ const display = document.querySelector('#display')
 const data = {
   bookList: []
 }
+
+const resetBookList = () => {
+  const RESULT = { 
+    STATUS: CODE.STATUS_TYPE.WAIT,
+    CONTENTS: null // old book list
+  }
+  try {
+    data.bookList.length = 0
+    // Update RESULT
+    RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
+  } catch (error) {
+    console.error('Could not reset book list: ' + error)
+    // Update RESULT
+    RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+  } finally {
+    return RESULT
+  }
+}
+
+const replaceBookList = (bookList) => {
+  const RESULT = { 
+    STATUS: CODE.STATUS_TYPE.WAIT,
+    CONTENTS: null // new book list
+  }
+  try {
+    const check = dataAPI.getSafeBookList(bookList)
+    // Early exit if getSafeBookList fails else continue
+    if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
+    const safeBookList = check.CONTENTS
+    resetBookList()
+    data.bookList = [...safeBookList]
+    // Update RESULT
+    RESULT.CONTENTS = safeBookList
+    RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
+  } catch (error) {
+    console.error('Could not reset book list: ' + error)
+    // Update RESULT
+    RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+  } finally {
+    return RESULT
+  }
+}
+
+const syncBookList = () => {
+  const RESULT = { 
+    STATUS: CODE.STATUS_TYPE.WAIT,
+    CONTENTS: null
+  }
+  try {
+    const check = dataAPI.readBookList()
+    // Early exit if readBookList fails else continue
+    if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not read book list'
+    const safeBookList = check.CONTENTS
+    replaceBookList(safeBookList)
+    // Update RESULT
+    RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
+  } catch (error) {
+    console.error('Could not reset book list: ' + error)
+    // Update RESULT
+    RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
+  } finally {
+    return RESULT
+  }
+}
+
 
 const addBookData = (bookData) => {
   const RESULT = {
@@ -67,29 +133,6 @@ const removeBookData = (...bookIdList) => {
     RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
   } catch (error) {
     if (CODE.DEBUG_MODE) console.error('Could not remove books: ' + error)
-    // Update RESULT
-    RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
-  } finally {
-    return RESULT
-  }
-}
-
-const  updateBookData = (...bookList) => {
-  const RESULT = {
-    STATUS: CODE.STATUS_TYPE.WAIT,
-    CONTENTS: null
-  }
-  try {
-    // Sanitize data
-    const BOOKLIST = bookList
-    const safeBookList = databaseAPI.getSafeData(BOOKLIST, CODE.OBJ_TYPE.BOOKLIST)
-    // Clear display bookList & push new books
-    data.bookList.length = 0
-    data.bookList.push(...safeBookList)
-    // Update RESULT
-    RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
-  } catch (error) {
-    console.error('Could not update display book list: ' + error)
     // Update RESULT
     RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
   } finally {
@@ -252,9 +295,10 @@ const updateDisplay = () => {
 
 return {
   toggleVisibility,
+  syncBookList,
+  replaceBookList,
   addBookData,
   removeBookData,
-  updateBookData,
   showBook,
   hideBook,
   checkDisplay,
