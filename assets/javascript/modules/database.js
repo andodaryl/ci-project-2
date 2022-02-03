@@ -233,68 +233,6 @@ const getSafeBookField = (input) => {
   }
 }
 
-const matchData = (input1, input2, type) => {
-    const RESULT = { 
-      STATUS: CODE.STATUS_TYPE.WAIT,
-      CONTENTS: null // MATCH_TYPE
-    }
-    try {
-      const safeInput1 = getSafeData(input1, type)
-      const safeInput2 = getSafeData(input2, type)
-      let isExactMatch, isPartialMatch
-      switch(type) {
-        case CODE.OBJ_TYPE.BOOKFIELD:
-          const BOOKFIELD1 = safeInput1
-          const BOOKFIELD2 = safeInput2
-          // Update RESULT
-          if (BOOKFIELD1 === BOOKFIELD2) RESULT.CONTENTS = CODE.MATCH_TYPE.EXACT
-          if (BOOKFIELD1 !== BOOKFIELD2) RESULT.CONTENTS = CODE.MATCH_TYPE.NONE
-          RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
-          break;
-        case CODE.OBJ_TYPE.BOOK:
-          const bookData1 = Object.entries(safeInput1)
-          const bookData2 = Object.entries(safeInput2)
-          isExactMatch = bookData1.every(BOOKFIELD1 => 
-            bookData2.every(
-              BOOKFIELD2 => matchData(BOOKFIELD1, BOOKFIELD2, CODE.OBJ_TYPE.BOOKFIELD)
-          ))
-          isPartialMatch = bookData1.some(BOOKFIELD1 => 
-            bookData2.some(
-              BOOKFIELD2 => matchData(BOOKFIELD1, BOOKFIELD2, CODE.OBJ_TYPE.BOOKFIELD)
-          ))
-          // Update RESULT
-          RESULT.CONTENTS = isExactMatch ? CODE.MATCH_TYPE.EXACT : 
-          isPartialMatch ? CODE.MATCH_TYPE.SOME : CODE.MATCH_TYPE.NONE
-          RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
-          break;
-          case CODE.OBJ_TYPE.BOOKLIST:
-            const BOOKLIST1 = Object.entries(safeInput1)
-            const BOOKLIST2 = Object.entries(safeInput2)
-            isExactMatch = BOOKLIST1.every(BOOK1 => 
-              BOOKLIST2.every(
-                BOOK2 => matchData(BOOK1, BOOK2, CODE.OBJ_TYPE.BOOKFIELD)
-              ))
-            isPartialMatch = BOOKLIST1.some(BOOK1 => 
-              BOOKLIST2.some(
-                BOOK2 => matchData(BOOK1, BOOK2, CODE.OBJ_TYPE.BOOKFIELD)
-              ))
-            // Update RESULT
-            RESULT.CONTENTS = isExactMatch ? CODE.MATCH_TYPE.EXACT: 
-            isPartialMatch ? CODE.MATCH_TYPE.SOME: CODE.MATCH_TYPE.NONE
-            RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
-            break;
-        default:
-          throw 'Invalid type'
-      }
-    } catch (error) {
-      if (CODE.DEBUG_MODE) console.error('Could not compare data: ' + error)
-      // Update RESULT
-      RESULT.STATUS = CODE.STATUS_TYPE.FAILURE
-    } finally {
-      return RESULT
-    }
-  }
-
 // DATA MANIPULATION SYSTEM
 const updateBookList = (input, type) => {
   const RESULT = {
@@ -524,7 +462,6 @@ return {
   getSafeBookList,
   getSafeBook,
   getSafeBookField,
-  matchData,
   updateBookList,
   addBook,
   deleteBooks,
