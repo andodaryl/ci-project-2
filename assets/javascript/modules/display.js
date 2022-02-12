@@ -1,6 +1,7 @@
 // IMPORTS
 import CODE from './dictionary.js'
 import dataAPI from './database.js'
+import bindBookCard from '../components/bookcard.js'
 
 export default (function() {
 // ELEMENTS
@@ -39,8 +40,8 @@ const replaceBookList = (bookList) => {
     // Early exit if getSafeBookList fails else continue
     if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
     const safeBookList = check.CONTENTS
-    resetBookList()
     data.bookList = [...safeBookList]
+    syncDisplay()
     // Update RESULT
     RESULT.CONTENTS = safeBookList
     RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
@@ -89,8 +90,13 @@ const addBook = (bookData) => {
     // Early exit if getSafeBookList fails else continue
     if (checkBookList.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
     const safeBookList = checkBookList.CONTENTS
+    // Delete book from book list if book id exists
+    const id = safeBook[CODE.FIELD_TYPE.ID]
+    const bookExists = safeBookList.some(book => book[CODE.FIELD_TYPE.ID] === id)
+    if (bookExists) deleteBook(id)
+    // Create new book list
     const newBookList = [...safeBookList, safeBook] // concat new book with old book list
-    resetBookList(newBookList)
+    replaceBookList(newBookList)
     // Update RESULT
     RESULT.CONTENTS = safeBook
     RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
@@ -230,7 +236,8 @@ const checkDisplay = () => {
   }
     try {
       // Find & sanitise ids of BookCards on display
-      const cardBookList = display.querySelectorAll(['[data-book-id]'])
+      const display = document.querySelector('#book-list')
+      const cardBookList = display.querySelectorAll('[data-book-id]')
       const safeIdList = []
       for (let index = 0; index < cardBookList.length; index++) {
         const CardBook = cardBookList[index];
@@ -260,7 +267,7 @@ const syncDisplay = () => {
   }
     try {
       // Get id list of books displayed
-      const displayedBooksIdList = this.checkDisplay() // includes error check
+      const displayedBooksIdList = checkDisplay().CONTENTS // includes error check
       // Find & sanitise ids of BookCards to display
       const checkBookList = dataAPI.getSafeBookList(data.bookList)
       if (checkBookList.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book list'
@@ -268,9 +275,24 @@ const syncDisplay = () => {
       // Get id list
       const targetIdList = safeBookList.map(book => book[CODE.FIELD_TYPE.ID])
       // Remove books currently on display
-      this.hideBook(...displayedBooksIdList)
-      // Display safe books from display book list
-      this.showBook(...targetIdList)
+      displayedBooksIdList.forEach(
+        id => {
+          const prop = `[data-book-id="${id}"]`
+          const bookCard = document.querySelector(prop)
+          console.log(bookCard)
+          bookCard.remove()
+        })
+      // Append books from display book list
+      const display = document.querySelector('#book-list')
+      const bookModal = document.querySelector('#bookModal')
+      const sampleBook = document.querySelector('[data-book-id="sampleBook"]')
+      const generateBookCard = bindBookCard({display, sampleBook, bookModal})
+      targetIdList.forEach(
+        id => {
+          const safeBookData = safeBookList.find(book => book[CODE.FIELD_TYPE.ID === id])
+          const newBookCard = generateBookCard(safeBookData)
+          display.append(newBookCard)
+        })
       // Update RESULT
       RESULT.CONTENTS = targetIdList
       RESULT.STATUS = CODE.STATUS_TYPE.SUCCESS
@@ -284,6 +306,7 @@ const syncDisplay = () => {
   }
 
 return {
+  resetBookList,
   syncBookList,
   replaceBookList,
   addBook,
