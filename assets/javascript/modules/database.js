@@ -23,7 +23,7 @@ class Book {
     if (check.STATUS === CODE.STATUS_TYPE.FAILURE) safeBookData = {...data.default.book}
     safeBookData = check.CONTENTS
     // Add properties to instance from safe book data + new unique id
-    this[CODE.FIELD_TYPE.ID] = getUniqueInteger()
+    if (!safeBookData[CODE.FIELD_TYPE.ID]) this[CODE.FIELD_TYPE.ID] = getUniqueInteger()
     this[CODE.FIELD_TYPE.TITLE] = safeBookData[CODE.FIELD_TYPE.TITLE]
     this[CODE.FIELD_TYPE.TOTAL_PAGES] = safeBookData[CODE.FIELD_TYPE.TOTAL_PAGES]
     this[CODE.FIELD_TYPE.YEAR] = safeBookData[CODE.FIELD_TYPE.YEAR]
@@ -376,10 +376,18 @@ const addBook = (bookDataObject) => {
       CONTENTS: null // new book instance added to book list
     }
     try {
-      const check = getSafeBook(bookDataObject)
+      const checkBook = getSafeBook(bookDataObject)
       // Exit early if getSafeBook fails else continue
-      if (check.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book'
-      const safeBookObject = check.CONTENTS
+      if (checkBook.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book'
+      const safeBookObject = checkBook.CONTENTS
+      const checkBookList = getSafeBookList(data.bookList)
+      // Exit early if getSafeBookList fails else continue
+      if (checkBookList.STATUS === CODE.STATUS_TYPE.FAILURE) throw 'Could not get safe book'
+      const safeBookList = checkBookList.CONTENTS
+      // Delete book from book list if book id exists
+      const id = safeBookObject[CODE.FIELD_TYPE.ID]
+      const bookExists = safeBookList.some(book => book[CODE.FIELD_TYPE.ID] === id)
+      if (bookExists) deleteBook(id)
       const BOOK = new Book(safeBookObject)
       data.bookList.push(BOOK) // Add to book list
       // Update RESULT
