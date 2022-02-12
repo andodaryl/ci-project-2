@@ -57,7 +57,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="s_kKsyNyxPXZ2Rxk8oQH" name="UI Logic">
-        <mxGraphModel dx="3252" dy="1526" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="2943" dy="1315" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="vE5BKZQ4KzmI6fFX7A4_-0"/>
                 <mxCell id="vE5BKZQ4KzmI6fFX7A4_-1" parent="vE5BKZQ4KzmI6fFX7A4_-0"/>
@@ -608,7 +608,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="ayZde1XETbOfqCPj_9mf" name="API Logic">
-        <mxGraphModel dx="2864" dy="461" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="3134" dy="646" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="kwAvdSzsXRPY2FFkaO3_-0"/>
                 <mxCell id="kwAvdSzsXRPY2FFkaO3_-1" parent="kwAvdSzsXRPY2FFkaO3_-0"/>
