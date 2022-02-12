@@ -110,14 +110,14 @@
               </div>
               <!-- pages -->
               <div class="col-6 form-floating">
-                  <input type="number" class="form-control" data-book-prop="pages" name="pages" placeholder="0" min="1" value="0" required/>
+                  <input type="number" class="form-control" data-book-prop="totalPages" name="pages" placeholder="0" min="1" value="0" required/>
                   <label for="subjectList">Pages</label>
               </div>
             </form>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-            <button id="addBookBtn" type="button" class="btn btn-success" data-bs-dismiss="modal">Create</button>
+            <button id="addBookBtn" type="button" class="btn btn-success text-capitalize" data-bs-dismiss="modal" data-book-action="create">create</button>
           </div>
         </div>
       </div>
